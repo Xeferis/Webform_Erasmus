@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+<main class="text-center">
+    <h1>Herzlich willkommen</h1>
+    <a type="button" class="btn btn-outline-primary m-2" href="{{url_for('input_form')}}"> Start </a>
+</main>
+{% endblock %} 

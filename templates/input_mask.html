@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Benutzerdaten{% endblock %}
+
+{% macro inputfield(name, id, type='text') -%}
+<div class="col" style="width: 20rem;">
+    <label for="{{ id }}" class="form-label">{{ name }}</label>
+    <input type="{{ type }}" class="form-control" id="{{ id }}" required>
+    <div class="valid-feedback">
+        Looks good!
+    </div>
+</div>
+{%- endmacro %}
+
+{% block content %}
+<main class="p-5">
+    <form class="row g-5 needs-validation justify-content-center" novalidate>
+        {{ inputfield("Vorname", "fname") }}
+        {{ inputfield("Nachname", "lname") }}
+        {{ inputfield("E-Mail", "email", "E-Mail") }}
+        {{ inputfield("Alter", "age") }}
+        {{ inputfield("Test", "test") }}
+        <div class="col-12">
+            <button class="btn btn-primary" type="submit">Submit form</button>
+        </div>
+    </form>
+</main>
+{% endblock %}{{input(Name)}}
