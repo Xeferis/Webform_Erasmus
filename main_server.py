@@ -8,7 +8,7 @@ def start():
     return render_template('index.html')
 
 
-@server.route('/userform', method=['GET', 'POST'])
+@server.route('/userform', methods=['GET', 'POST'])
 def input_form():
     return render_template('input_mask.html')
 
