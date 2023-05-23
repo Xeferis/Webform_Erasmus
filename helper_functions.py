@@ -75,7 +75,7 @@ class Database_helper():
 
 
 if __name__ == "__main__":
-    db_test = Database_helper('test.db')
+    db_test = Database_helper('Data/test.db')
     inp = ['test', 'Test12', 'h@b.de', '0568432165877',
            'Street', '34281', 'Gudensberg', 'Hessen']
     db_test.add_data(inp)
