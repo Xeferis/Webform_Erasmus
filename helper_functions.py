@@ -4,8 +4,8 @@ import random as rnd
 
 class Database_helper():
     def __init__(self, path_2_db: str) -> None:
-        _db = sq3.connect(database=path_2_db)
-        curs = _db.cursor()
+        self._db = sq3.connect(database=path_2_db)
+        curs = self._db.cursor()
         curs.execute("""
                     SELECT count(name)
                     FROM sqlite_master
@@ -30,7 +30,7 @@ class Database_helper():
                     );""")
             print("Table USER Created!")
 
-        _db.commit()
+        self._db.commit()
 
     def add_data(self, data: list, max_trys=10):
         if len(data) > 8:
