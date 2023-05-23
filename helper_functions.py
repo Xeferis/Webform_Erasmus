@@ -60,8 +60,11 @@ class Database_helper():
                         """)
 
             if self.__loop_trys > max_trys:
-                print(
-                    'Generating User ID failed. Abort adding User. No valid id has been found!')
+                print('''
+                Generating User ID failed.
+                Abort adding User.
+                No valid id has been found!
+                ''')
                 return
             elif self.__curs.fetchone()[0] == 1:
                 print(f"ID: {id} already exists, generating new one!")
