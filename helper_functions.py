@@ -4,78 +4,73 @@ from random import randint
 
 class Database_helper():
     def __init__(self, path_2_db: str) -> None:
-        self._db = sq3.connect(database=path_2_db)
-        curs = self._db.cursor()
-        curs.execute("""
+        self.__db = sq3.connect(database=path_2_db)
+        self.__curs = self.__db.cursor()
+        # Max Trys for loops
+        self.__trys = 0
+        self.__tokenlength = 16
+
+        self.__curs.execute("""
                     SELECT count(name)
                     FROM sqlite_master
                     WHERE type='table'
                     AND name='USER'
                     """)
 
-        if curs.fetchone()[0] == 1:
+        if self.__curs.fetchone()[0] == 1:
             print("Table USER exists")
         else:
-            curs.execute("""
+            self.__curs.execute("""
                     CREATE TABLE USER
                     (ID char(10) PRIMARY KEY NOT NULL,
                     FIRSTNAME CHAR(20) NOT NULL,
                     NAME CHAR(20) NOT NULL,
-                    EMAIL CHAR(25) NOT NULL,
-                    PHONE CHAR(25) NOT NULL,
-                    STREET CHAR(50) NOT NULL,
-                    POSTCODE CHAR(6) NOT NULL,
-                    CITY CHAR(50) NOT NULL,
-                    STATE CHAR(50) NOT NULL
+                    EMAIL CHAR(25) NOT NULL
                     );""")
             print("Table USER Created!")
 
-        self._db.commit()
+        self.__db.commit()
 
-    def add_data(self, data: list, max_trys=10):
-        if len(data) > 8:
-            print("Too much data given!")
-            return
+    def add_user(self, data: list, max_trys=10):
         sql_statement = """
                         INSERT INTO USER
                         (ID,
                         FIRSTNAME,
                         NAME,
-                        EMAIL,
-                        PHONE,
-                        STREET,
-                        POSTCODE,
-                        CITY,
-                        STATE)
-                        VALUES(?,?,?,?,?,?,?,?,?)
+                        EMAIL
+                        )
+                        VALUES(?,?,?,?)
                         """
-        curs = self._db.cursor()
-        trys = 0
-        n = 10
+
+        if len(data) > 8:
+            print("Too much data given!")
+            return
+
         while True:
-            id = ''.join(["{}".format(randint(0, 9)) for num in range(0, n)])
-            curs.execute(f"""
+            id = ''.join(["{}".format(
+                randint(0, 9)) for num in range(0, self.__tokenlength)])
+
+            self.__curs.execute(f"""
                         SELECT count(ID)
                         FROM USER
                         WHERE ID='{id}'
                         """)
-            if trys > max_trys:
+            if self.__trys > max_trys:
                 print(
                     'Generating User ID failed. Abort adding User. No valid id has been found!')
                 return
-            elif curs.fetchone()[0] == 1:
+            elif self.__curs.fetchone()[0] == 1:
                 print(f"ID: {id} already exists, generating new one!")
-                trys += 1
+                self.__trys += 1
             else:
                 break
         print(f"Adding new User with ID {id}")
         data.insert(0, id)
-        curs.execute(sql_statement, data)
-        self._db.commit()
+        self.__curs.execute(sql_statement, data)
+        self.__db.commit()
 
 
 if __name__ == "__main__":
     db_test = Database_helper('Data/test.db')
-    inp = ['test', 'Test12', 'h@b.de', '0568432165877',
-           'Street', '34281', 'Gudensberg', 'Hessen']
-    db_test.add_data(inp)
+    inp = ['test', 'Test12', 'h@b.de']
+    db_test.add_user(inp)
