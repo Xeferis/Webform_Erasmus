@@ -77,6 +77,26 @@ class Database_helper():
         self.__curs.execute(sql_statement, data)
         self.__db.commit()
 
+    def complete_user(self, data: list) -> str:
+        sql_statement = """INSERT Into"""
+
+        self.__curs.execute(f"""
+                        SELECT count(ID)
+                        FROM User_data
+                        WHERE ID='{id}'
+                        """)
+
+        if self.__curs.fetchone()[0] == 1:
+            print(f"""
+            The User with the ID {id},
+            already exists.""")
+        else:
+            return data
+
+        self.__curs.execute(sql_statement, data)
+        self.__db.commit()
+        return data
+
 
 if __name__ == "__main__":
     db_test = Database_helper('Data/test.db')
