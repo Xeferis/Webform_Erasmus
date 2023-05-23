@@ -3,6 +3,10 @@ from random import randint
 
 
 class Database_helper():
+    """
+    Generates all User-Databases
+    and is used to manipulate
+    """
     def __init__(self, path_2_db: str) -> None:
         self.__db = sq3.connect(database=path_2_db)
         self.__curs = self.__db.cursor()
@@ -31,7 +35,7 @@ class Database_helper():
 
         self.__db.commit()
 
-    def add_user(self, data: list, max_trys=10):
+    def add_user(self, data: list, max_trys=10) -> None:
         sql_statement = """
                         INSERT INTO USER
                         (ID,
@@ -55,6 +59,7 @@ class Database_helper():
                         FROM USER
                         WHERE ID='{id}'
                         """)
+
             if self.__trys > max_trys:
                 print(
                     'Generating User ID failed. Abort adding User. No valid id has been found!')
@@ -64,6 +69,7 @@ class Database_helper():
                 self.__trys += 1
             else:
                 break
+
         print(f"Adding new User with ID {id}")
         data.insert(0, id)
         self.__curs.execute(sql_statement, data)
