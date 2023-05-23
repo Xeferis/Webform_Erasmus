@@ -1,5 +1,5 @@
 import sqlite3 as sq3
-import random as rnd
+from random import randint
 
 
 class Database_helper():
@@ -53,7 +53,7 @@ class Database_helper():
         trys = 0
         n = 10
         while True:
-            id = ''.join(["{}".format(rnd.randint(0, 9)) for num in range(0, n)])
+            id = ''.join(["{}".format(randint(0, 9)) for num in range(0, n)])
             curs.execute(f"""
                         SELECT count(ID)
                         FROM USER
