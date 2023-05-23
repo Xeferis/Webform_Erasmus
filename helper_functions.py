@@ -10,8 +10,7 @@ class Database_helper():
     def __init__(self, path_2_db: str) -> None:
         self.__db = sq3.connect(database=path_2_db)
         self.__curs = self.__db.cursor()
-        # Max Trys for loops
-        self.__trys = 0
+        self.__loop_trys = 0
         self.__tokenlength = 16
 
         self.__curs.execute("""
@@ -60,13 +59,13 @@ class Database_helper():
                         WHERE ID='{id}'
                         """)
 
-            if self.__trys > max_trys:
+            if self.__loop_trys > max_trys:
                 print(
                     'Generating User ID failed. Abort adding User. No valid id has been found!')
                 return
             elif self.__curs.fetchone()[0] == 1:
                 print(f"ID: {id} already exists, generating new one!")
-                self.__trys += 1
+                self.__loop_trys += 1
             else:
                 break
 
