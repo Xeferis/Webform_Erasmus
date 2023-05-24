@@ -189,8 +189,12 @@ class Database_helper():
             self.__curs.execute(sql_statement, data)
             self.__db.commit()
 
-    def complete_user(self, data: list, token: str) -> str:
-        sql_statement = """INSERT Into"""
+    def complete_user(self, data: dict, token: str) -> str:
+        sql_sttmnt_PD = """INSERT Into PRIVATE_DATA"""
+        sql_sttmnt_CITY = """INSERT Into CITY"""
+        sql_sttmnt_ADDRESS = """INSERT Into ADDRESS"""
+        sql_sttmnt_BANK = """INSERT Into BANK"""
+        sql_sttmnt_BD = """INSERT Into BANKDATA"""
 
         # Get UserID based on Token
         self.__curs.execute(f"""
@@ -204,15 +208,16 @@ class Database_helper():
             print(f"""
             The User with the token {token},
             has been found""")
-            return uid
         elif len(data) > 1:
             print("Es wurden mehrer Nutzer mit dem gleichen Token gefunden. Bitte wenden sie sich an ihren Andministrator!")
-            return None
+            return "ERROR"
         else:
             print(f"""
             NO User with the token {token},
             has been found""")
-            return None
+            return "ERROR"
+        
+        return uid
 
 
 
@@ -220,4 +225,4 @@ if __name__ == "__main__":
     db_test = Database_helper('Data/test.db')
     inp = ['test', 'Test12', 'h@c.de']
     # db_test.add_user(inp)
-    print(db_test.complete_user([], "asdasdasdasd"))
+    print(db_test.complete_user([], "b786b4b7-9e4f-47a2-81d1-a815377ec9fe"))
