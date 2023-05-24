@@ -1,5 +1,6 @@
 import sqlite3 as sq3
 from random import randint
+from uuid import uuid4
 
 
 class Database_helper():
@@ -26,7 +27,8 @@ class Database_helper():
         else:
             self.__curs.execute("""
                     CREATE TABLE USER
-                    (USERTOKEN CHAR(16) PRIMARY KEY NOT NULL,
+                    (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    USERTOKEN CHAR(32) NOT NULL,
                     FIRSTNAME CHAR(20) NOT NULL,
                     NAME CHAR(20) NOT NULL,
                     EMAIL CHAR(25) NOT NULL
@@ -46,10 +48,10 @@ class Database_helper():
         else:
             self.__curs.execute("""
                     CREATE TABLE PRIVATE_DATA
-                    (USERTOKEN CHAR(16) NOT NULL,
+                    (UID INTEGER NOT NULL,
                     BIRTHDAY DATE,
                     PHONE CHAR(20),
-                    FOREIGN KEY(USERTOKEN) REFERENCES USER(USERTOKEN)
+                    FOREIGN KEY(UID) REFERENCES USER(ID)
                     );""")
             print("Table PRIVATE_DATA Created!")
 
@@ -84,10 +86,10 @@ class Database_helper():
         else:
             self.__curs.execute("""
                     CREATE TABLE BANKDATA
-                    (USERTOKEN CHAR(16) NOT NULL,
+                    (UID INTEGER NOT NULL,
                     IBAN CHAR(22),
                     BIC CHAR(11),
-                    FOREIGN KEY(USERTOKEN) REFERENCES USER(USERTOKEN)
+                    FOREIGN KEY(UID) REFERENCES USER(ID)
                     FOREIGN KEY(BIC) REFERENCES BANK(BIC)
                     );""")
             print("Table BANKDATA Created!")
@@ -123,12 +125,12 @@ class Database_helper():
         else:
             self.__curs.execute("""
                     CREATE TABLE ADDRESS
-                    (USERTOKEN CHAR(16),
+                    (UID INTEGER NOT NULL,
                     CITY_ID INTEGER,
                     STREET CHAR(50),
                     NUMBER INTEGER,
                     POSTALCODE INTEGER,
-                    FOREIGN KEY(USERTOKEN) REFERENCES USER(USERTOKEN),
+                    FOREIGN KEY(UID) REFERENCES USER(ID),
                     FOREIGN KEY(CITY_ID) REFERENCES CITY(ID)
                     );""")
             print("Table ADDRESS Created!")
@@ -151,13 +153,12 @@ class Database_helper():
             return
 
         while True:
-            id = ''.join(["{}".format(
-                randint(0, 9)) for num in range(0, self.__tokenlength)])
+            token = str(uuid4())
 
             self.__curs.execute(f"""
                         SELECT count(USERTOKEN)
                         FROM USER
-                        WHERE USERTOKEN='{id}'
+                        WHERE USERTOKEN='{token}'
                         """)
 
             if self.__loop_trys > max_trys:
@@ -168,38 +169,55 @@ class Database_helper():
                 ''')
                 return
             elif self.__curs.fetchone()[0] == 1:
-                print(f"ID: {id} already exists, generating new one!")
+                print(f"ID: {token} already exists, generating new one!")
                 self.__loop_trys += 1
             else:
                 break
+            
+        self.__curs.execute(f"""
+                        SELECT count(EMAIL)
+                        FROM USER
+                        WHERE EMAIL='{data[2]}'
+                        """)
+        
+        if self.__curs.fetchone()[0] == 1:
+            print(f"User with the EMAIL: {data[2]} already exists")
+            print("No User added")
+        else:
+            print(f"Adding new User with ID {token}")
+            data.insert(0, token)
+            self.__curs.execute(sql_statement, data)
+            self.__db.commit()
 
-        print(f"Adding new User with ID {id}")
-        data.insert(0, id)
-        self.__curs.execute(sql_statement, data)
-        self.__db.commit()
-
-    def complete_user(self, data: list) -> str:
+    def complete_user(self, data: list, token: str) -> str:
         sql_statement = """INSERT Into"""
 
+        # Get UserID based on Token
         self.__curs.execute(f"""
-                        SELECT count(ID)
-                        FROM User_data
-                        WHERE USERTOKEN='{id}'
-                        """)
-
-        if self.__curs.fetchone()[0] == 1:
+                            SELECT *
+                            FROM USER
+                            WHERE USERTOKEN='{token}'
+                            """)
+        data = self.__curs.fetchall()
+        if len(data) == 1:
+            uid, token, name, fname, email = data[0]
             print(f"""
-            The User with the ID {id},
-            already exists.""")
+            The User with the token {token},
+            has been found""")
+            return uid
+        elif len(data) > 1:
+            print("Es wurden mehrer Nutzer mit dem gleichen Token gefunden. Bitte wenden sie sich an ihren Andministrator!")
+            return None
         else:
-            return data
+            print(f"""
+            NO User with the token {token},
+            has been found""")
+            return None
 
-        self.__curs.execute(sql_statement, data)
-        self.__db.commit()
-        return data
 
 
 if __name__ == "__main__":
     db_test = Database_helper('Data/test.db')
-    inp = ['test', 'Test12', 'h@b.de']
-    db_test.add_user(inp)
+    inp = ['test', 'Test12', 'h@c.de']
+    # db_test.add_user(inp)
+    print(db_test.complete_user([], "asdasdasdasd"))
