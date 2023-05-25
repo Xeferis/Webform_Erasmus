@@ -207,7 +207,6 @@ class Database_helper():
             self.__curs.execute(sql_sttmnt_PD, [new_data["birthday"], new_data["phone"]])
         elif len(data_PD) > 1:
             print("Es wurden mehrer Nutzer mit der gleichen ID gefunden. Bitte wenden sie sich an ihren Andministrator!")
-            return "ERROR"
         else:
             print(f"NO User with the id {uid}, has been found.Adding privata Data for this User")
             sql_sttmnt_PD = "INSERT INTO PRIVATE_DATA(UID, BIRTHDAY, PHONE) VALUES(?,?,?)"
@@ -221,22 +220,55 @@ class Database_helper():
                             """)
         data_AD = self.__curs.fetchall()
         if len(data_AD) == 1:
-            uid_tmp, birth, phone = data_PD[0]
+            uid_tmp, street, number, postal, city = data_PD[0]
             print(f"The User with the ID {uid}, has been found. Getting and Updating Data")
             sql_sttmnt_ADDRESS = f"UPDATE ADDRESS SET STREET = ?, NUMBER = ? , POSTALCODE = ?, CITY = ? WHERE UID={uid}"
             self.__curs.execute(sql_sttmnt_ADDRESS, [new_data["street"], new_data["number"], new_data["postal"], new_data["city"]])
         elif len(data_AD) > 1:
             print("Es wurden mehrer Nutzer mit der gleichen ID gefunden. Bitte wenden sie sich an ihren Andministrator!")
-            return "ERROR"
         else:
             print(f"NO User with the id {uid}, has been found.Adding privata Data for this User")
             sql_sttmnt_ADDRESS = f"""INSERT Into ADDRESS (UID, STREET, NUMBER, POSTALCODE, CITY) VALUES(?,?,?,?,?)"""
             self.__curs.execute(sql_sttmnt_ADDRESS, [uid, new_data["street"], new_data["number"], new_data["postal"], new_data["city"]])
 
+        # Get/Check Bankdata
+        self.__curs.execute(f"""
+                            SELECT *
+                            FROM BANKDATA
+                            WHERE UID='{uid}'
+                            """)
+        data_BD = self.__curs.fetchall()
+        if len(data_BD) == 1:
+            UID, iban, bic = data_BD[0]
+            print(
+                f"The User with the ID {uid}, has been found. Getting and Updating Data")
+            sql_sttmnt_BD = f"UPDATE BANKDATA SET IBAN = ?, BIC = ? WHERE UID={uid}"
+            self.__curs.execute(sql_sttmnt_BD, [new_data["iban"], new_data["bic"]])
+        elif len(data_BD) > 1:
+            print("Es wurden mehrer Nutzer mit der gleichen ID gefunden. Bitte wenden sie sich an ihren Andministrator!")
+        else:
+            print(
+                f"NO User with the id {uid}, has been found.Adding privata Data for this User")
+            sql_sttmnt_BD = f"""INSERT Into BANKDATA (UID, IBAN, BIC) VALUES(?,?,?)"""
+            self.__curs.execute(sql_sttmnt_BD, [uid, new_data["iban"], new_data["bic"]])
 
-        # 
-        # sql_sttmnt_BANK = f"""INSERT OR REPLACE Into BANK (BIC, Name) WHERE BIC={userinputbic} VALUES(?,?)"""
-        # sql_sttmnt_BD = f"""INSERT OR REPLACE Into BANKDATA (UID, IBAN, BIC) VALUES(?,?,?)"""
+        # Get/Check Bank
+        self.__curs.execute(f"""
+                            SELECT *
+                            FROM BANK
+                            WHERE BIC='{new_data['bic']}'
+                            """)
+        data_B = self.__curs.fetchall()
+        if len(data_B) == 1:
+            bic, name = data_BD[0]
+            print(f"The Bank with the BIC {new_data['bic']}, already exists.")
+        elif len(data_B) > 1:
+            print("Es wurden mehrer Banken mit der gleichen BIC gefunden. Bitte wenden sie sich an ihren Andministrator!")
+        else:
+            print(
+                f"NO BANK with the bic {new_data['bic']}, has been found.Adding privata Data for this User")
+            sql_sttmnt_BANK = f"""INSERT Into BANK (BIC, Name) VALUES(?,?)"""
+            self.__curs.execute(sql_sttmnt_BANK, [new_data["bic"], new_data["bankbez"]])
 
         self.__db.commit()
         return uid
@@ -333,9 +365,12 @@ if __name__ == "__main__":
         "street": "TestStreet",
         "number": 18,
         "postal": 45438,
-        "city": "testhausen"
+        "city": "testhausen",
+        "iban": "DE45 2341 1233 1673 0000 44",
+        "bic": "GENODIX23",
+        "bankbez": "Deutsche Test Bank eV"
         }
     # db_test.add_user(inp)
-    print(db_test.complete_user(new_data, "46361bba-957f-4936-ac86-a75558569be2"))
-    print(db_test.get_user('h@b.de'))
-    db_test.del_user("46361bba-957f-4936-ac86-a75558569be2")
+    # print(db_test.complete_user(new_data, "e64e3873-f7fc-4559-85d9-6c1cb159016e"))
+    # print(db_test.get_user('h@b.de'))
+    db_test.del_user("e64e3873-f7fc-4559-85d9-6c1cb159016e")
