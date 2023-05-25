@@ -10,7 +10,6 @@ class Generate_db():
     def __init__(self, path_2_db: str) -> None:
         self.__db = sq3.connect(database=path_2_db)
         self.__curs = self.__db.cursor()
-        self.__loop_trys = 0
         self.__tokenlength = 16
 
         # Check and/or create USER Table
@@ -127,6 +126,7 @@ class Generate_db():
                         )
                         VALUES(?,?,?,?)
                         """
+        loop_trys = 0
 
         if len(data) > 8:
             print("Too much data given!")
@@ -141,16 +141,13 @@ class Generate_db():
                         WHERE USERTOKEN='{token}'
                         """)
 
-            if self.__loop_trys > max_trys:
-                print('''
-                Generating User ID failed.
-                Abort adding User.
-                No valid id has been found!
-                ''')
+            if loop_trys > max_trys:
+                print("Generating User ID failed. Abort adding User. \
+                      no valid id has been found!")
                 return
             elif self.__curs.fetchone()[0] == 1:
                 print(f"ID: {token} already exists, generating new one!")
-                self.__loop_trys += 1
+                loop_trys += 1
             else:
                 break
 
@@ -184,7 +181,8 @@ class Generate_db():
             The User with the token {utoken},
             has been found""")
         elif len(data) > 1:
-            print("Es wurden mehrer Nutzer mit dem gleichen Token gefunden. Bitte wenden sie sich an ihren Andministrator!")
+            print("Es wurden mehrer Nutzer mit dem gleichen Token gefunden. \
+                  Bitte wenden sie sich an ihren Andministrator!")
             return "ERROR"
         else:
             print(f"""
@@ -201,15 +199,43 @@ class Generate_db():
         data_PD = self.__curs.fetchall()
         if len(data_PD) == 1:
             uid_tmp, birth, phone = data_PD[0]
-            print(f"The User with the ID {uid}, has been found. Getting and Updating Data")
-            sql_sttmnt_PD = f"UPDATE PRIVATE_DATA SET BIRTHDAY = ?, PHONE = ? WHERE UID={uid}"
-            self.__curs.execute(sql_sttmnt_PD, [new_data["birthday"], new_data["phone"]])
+            print(f"The User with the ID {uid}, has been found. \
+                  Getting and Updating Data")
+
+            sql_sttmnt_PD = f"""
+                            UPDATE PRIVATE_DATA
+                            SET
+                            BIRTHDAY = ?,
+                            PHONE = ?
+                            WHERE UID={uid}
+                            """
+
+            self.__curs.execute(sql_sttmnt_PD, [
+                new_data["birthday"],
+                new_data["phone"]
+                ])
+
         elif len(data_PD) > 1:
-            print("Es wurden mehrer Nutzer mit der gleichen ID gefunden. Bitte wenden sie sich an ihren Andministrator!")
+            print("Es wurden mehrer Nutzer mit der gleichen ID gefunden. \
+                  Bitte wenden sie sich an ihren Andministrator!")
         else:
-            print(f"NO User with the id {uid}, has been found.Adding privata Data for this User")
-            sql_sttmnt_PD = "INSERT INTO PRIVATE_DATA(UID, BIRTHDAY, PHONE) VALUES(?,?,?)"
-            self.__curs.execute(sql_sttmnt_PD, [uid, new_data["birthday"], new_data["phone"]])
+            print(f"NO User with the id {uid}, has been found. \
+                  Adding privata Data for this User")
+
+            sql_sttmnt_PD = """
+                            INSERT INTO PRIVATE_DATA
+                            (
+                                UID,
+                                BIRTHDAY,
+                                PHONE
+                            )
+                            VALUES(?,?,?)"""
+
+            self.__curs.execute(sql_sttmnt_PD, [
+                uid,
+                new_data["birthday"],
+                new_data["phone"]
+                ])
 
         # Get/Check Address
         self.__curs.execute(f"""
@@ -218,17 +244,54 @@ class Generate_db():
                             WHERE UID='{uid}'
                             """)
         data_AD = self.__curs.fetchall()
+
         if len(data_AD) == 1:
             uid_tmp, street, number, postal, city = data_PD[0]
-            print(f"The User with the ID {uid}, has been found. Getting and Updating Data")
-            sql_sttmnt_ADDRESS = f"UPDATE ADDRESS SET STREET = ?, NUMBER = ? , POSTALCODE = ?, CITY = ? WHERE UID={uid}"
-            self.__curs.execute(sql_sttmnt_ADDRESS, [new_data["street"], new_data["number"], new_data["postal"], new_data["city"]])
+            print(f"The User with the ID {uid}, has been found. \
+                  Getting and Updating Data")
+
+            sql_sttmnt_ADDRESS = f"""
+                                UPDATE ADDRESS
+                                SET
+                                STREET = ?,
+                                NUMBER = ? ,
+                                POSTALCODE = ?,
+                                CITY = ?
+                                WHERE UID={uid}
+                                """
+
+            self.__curs.execute(sql_sttmnt_ADDRESS, [
+                new_data["street"],
+                new_data["number"],
+                new_data["postal"],
+                new_data["city"]
+                ])
+
         elif len(data_AD) > 1:
-            print("Es wurden mehrer Nutzer mit der gleichen ID gefunden. Bitte wenden sie sich an ihren Andministrator!")
+            print("Es wurden mehrer Nutzer mit der gleichen ID gefunden. \
+                  Bitte wenden sie sich an ihren Andministrator!")
         else:
-            print(f"NO User with the id {uid}, has been found.Adding privata Data for this User")
-            sql_sttmnt_ADDRESS = f"""INSERT Into ADDRESS (UID, STREET, NUMBER, POSTALCODE, CITY) VALUES(?,?,?,?,?)"""
-            self.__curs.execute(sql_sttmnt_ADDRESS, [uid, new_data["street"], new_data["number"], new_data["postal"], new_data["city"]])
+            print(f"NO User with the id {uid}, has been found. \
+                  Adding privata Data for this User")
+
+            sql_sttmnt_ADDRESS = """
+                                INSERT Into ADDRESS
+                                (
+                                    UID,
+                                    STREET,
+                                    NUMBER,
+                                    POSTALCODE,
+                                    CITY
+                                )
+                                VALUES(?,?,?,?,?)
+                                """
+            self.__curs.execute(sql_sttmnt_ADDRESS, [
+                uid,
+                new_data["street"],
+                new_data["number"],
+                new_data["postal"],
+                new_data["city"]
+                ])
 
         # Get/Check Bankdata
         self.__curs.execute(f"""
@@ -237,19 +300,48 @@ class Generate_db():
                             WHERE UID='{uid}'
                             """)
         data_BD = self.__curs.fetchall()
+
         if len(data_BD) == 1:
             UID, iban, bic = data_BD[0]
-            print(
-                f"The User with the ID {uid}, has been found. Getting and Updating Data")
-            sql_sttmnt_BD = f"UPDATE BANKDATA SET IBAN = ?, BIC = ? WHERE UID={uid}"
-            self.__curs.execute(sql_sttmnt_BD, [new_data["iban"], new_data["bic"]])
+
+            print(f"The User with the ID {uid}, has been found. \
+                  Getting and Updating Data")
+
+            sql_sttmnt_BD = f"""
+                            UPDATE BANKDATA
+                            SET
+                            IBAN = ?,
+                            BIC = ?
+                            WHERE UID={uid}
+                            """
+
+            self.__curs.execute(sql_sttmnt_BD, [
+                new_data["iban"],
+                new_data["bic"]
+                ])
+
         elif len(data_BD) > 1:
-            print("Es wurden mehrer Nutzer mit der gleichen ID gefunden. Bitte wenden sie sich an ihren Andministrator!")
+            print("Es wurden mehrer Nutzer mit der gleichen ID gefunden. \
+                  Bitte wenden sie sich an ihren Andministrator!")
         else:
-            print(
-                f"NO User with the id {uid}, has been found.Adding privata Data for this User")
-            sql_sttmnt_BD = f"""INSERT Into BANKDATA (UID, IBAN, BIC) VALUES(?,?,?)"""
-            self.__curs.execute(sql_sttmnt_BD, [uid, new_data["iban"], new_data["bic"]])
+            print(f"NO User with the id {uid}, has been found. \
+                  Adding privata Data for this User")
+
+            sql_sttmnt_BD = """
+                            INSERT Into BANKDATA
+                            (
+                                UID,
+                                IBAN,
+                                BIC
+                            )
+                            VALUES(?,?,?)
+                            """
+
+            self.__curs.execute(sql_sttmnt_BD, [
+                uid,
+                new_data["iban"],
+                new_data["bic"]
+                ])
 
         # Get/Check Bank
         self.__curs.execute(f"""
@@ -258,23 +350,37 @@ class Generate_db():
                             WHERE BIC='{new_data['bic']}'
                             """)
         data_B = self.__curs.fetchall()
+
         if len(data_B) == 1:
             bic, name = data_BD[0]
             print(f"The Bank with the BIC {new_data['bic']}, already exists.")
         elif len(data_B) > 1:
-            print("Es wurden mehrer Banken mit der gleichen BIC gefunden. Bitte wenden sie sich an ihren Andministrator!")
+            print("Es wurden mehrer Banken mit der gleichen BIC gefunden. \
+                  Bitte wenden sie sich an ihren Andministrator!")
         else:
-            print(
-                f"NO BANK with the bic {new_data['bic']}, has been found.Adding privata Data for this User")
-            sql_sttmnt_BANK = f"""INSERT Into BANK (BIC, Name) VALUES(?,?)"""
-            self.__curs.execute(sql_sttmnt_BANK, [new_data["bic"], new_data["bankbez"]])
+            print(f"NO BANK with the bic {new_data['bic']}, has been found. \
+                  Adding privata Data for this User")
+
+            sql_sttmnt_BANK = """
+                            INSERT Into BANK
+                            (
+                                BIC,
+                                Name
+                            )
+                            VALUES(?,?)
+                            """
+
+            self.__curs.execute(sql_sttmnt_BANK, [
+                new_data["bic"],
+                new_data["bankbez"]
+                ])
 
         self.__db.commit()
         return uid
 
     def get_user(self, mail) -> list:
         self.__curs.execute(f"""
-                            select 
+                            select
                             USER.UID,
                             USER.NAME,
                             USER.FIRSTNAME,
@@ -319,44 +425,41 @@ class Generate_db():
             print(f"""
             The User with the token {utoken},
             has been found and gets deleted""")
-        elif len(data) > 1:
-            print("Es wurden mehrer Nutzer mit dem gleichen Token gefunden. Bitte wenden sie sich an ihren Andministrator!")
-            return "ERROR"
-        else:
-            print(f"""
-            NO User with the token {utoken},
-            has been found. It might be deleted already""")
-            return "ERROR"
 
-        self.__curs.execute(f"""
-                            DELETE 
+            self.__curs.execute(f"""
+                            DELETE
                             from USER
                             WHERE USER.UID='{uid}'
                             """)
 
-        self.__curs.execute(f"""
-                            DELETE 
-                            from PRIVATE_DATA
-                            WHERE PRIVATE_DATA.UID='{uid}'
-                            """)
+            self.__curs.execute(f"""
+                                DELETE
+                                from PRIVATE_DATA
+                                WHERE PRIVATE_DATA.UID='{uid}'
+                                """)
 
-        self.__curs.execute(f"""
-                            DELETE 
-                            from ADDRESS
-                            WHERE ADDRESS.UID='{uid}'
-                            """)
+            self.__curs.execute(f"""
+                                DELETE
+                                from ADDRESS
+                                WHERE ADDRESS.UID='{uid}'
+                                """)
 
-        self.__curs.execute(f"""
-                            DELETE 
-                            from BANKDATA
-                            WHERE BANKDATA.UID='{uid}'
-                            """)
-
+            self.__curs.execute(f"""
+                                DELETE
+                                from BANKDATA
+                                WHERE BANKDATA.UID='{uid}'
+                                """)
+        elif len(data) > 1:
+            print("Es wurden mehrer Nutzer mit dem gleichen Token gefunden. \
+                  Bitte wenden sie sich an ihren Andministrator!")
+        else:
+            print(f"NO User with the token {utoken}, \
+            has been found. It might be deleted already")
         self.__db.commit()
 
 
 if __name__ == "__main__":
-    db_test = Database_helper('Data/test.db')
+    db_test = Generate_db('Data/test.db')
     inp = ['test', 'Test12', 'h@b.de']
     new_data = {
         "birthday": "20.08.2003",
