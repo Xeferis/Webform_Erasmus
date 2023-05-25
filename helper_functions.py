@@ -171,26 +171,26 @@ class Database_helper():
             self.__curs.execute(sql_statement, data)
             self.__db.commit()
 
-    def complete_user(self, new_data: dict, token: str) -> str:
+    def complete_user(self, new_data: dict, utoken: str) -> str:
 
         # Get UserID based on Token
         self.__curs.execute(f"""
                             SELECT *
                             FROM USER
-                            WHERE USERTOKEN='{token}'
+                            WHERE USERTOKEN='{utoken}'
                             """)
         data = self.__curs.fetchall()
         if len(data) == 1:
             uid, token, name, fname, email = data[0]
             print(f"""
-            The User with the token {token},
+            The User with the token {utoken},
             has been found""")
         elif len(data) > 1:
             print("Es wurden mehrer Nutzer mit dem gleichen Token gefunden. Bitte wenden sie sich an ihren Andministrator!")
             return "ERROR"
         else:
             print(f"""
-            NO User with the token {token},
+            NO User with the token {utoken},
             has been found""")
             return "ERROR"
         
@@ -276,6 +276,56 @@ class Database_helper():
         extracted_data = self.__curs.fetchall()
         self.__db.commit()
         return extracted_data
+    
+    
+    def del_user(self, utoken) -> None:
+        
+        # Get UserID based on Token
+        self.__curs.execute(f"""
+                            SELECT *
+                            FROM USER
+                            WHERE USERTOKEN='{utoken}'
+                            """)
+        data = self.__curs.fetchall()
+        if len(data) == 1:
+            uid, token, name, fname, email = data[0]
+            print(f"""
+            The User with the token {utoken},
+            has been found and gets deleted""")
+        elif len(data) > 1:
+            print("Es wurden mehrer Nutzer mit dem gleichen Token gefunden. Bitte wenden sie sich an ihren Andministrator!")
+            return "ERROR"
+        else:
+            print(f"""
+            NO User with the token {utoken},
+            has been found. It might be deleted already""")
+            return "ERROR"
+        
+        self.__curs.execute(f"""
+                            DELETE 
+                            from USER
+                            WHERE USER.UID='{uid}'
+                            """)
+
+        self.__curs.execute(f"""
+                            DELETE 
+                            from PRIVATE_DATA
+                            WHERE PRIVATE_DATA.UID='{uid}'
+                            """)
+        
+        self.__curs.execute(f"""
+                            DELETE 
+                            from ADDRESS
+                            WHERE ADDRESS.UID='{uid}'
+                            """)
+        
+        self.__curs.execute(f"""
+                            DELETE 
+                            from BANKDATA
+                            WHERE BANKDATA.UID='{uid}'
+                            """)
+        
+        self.__db.commit()
 
 
 if __name__ == "__main__":
@@ -290,5 +340,7 @@ if __name__ == "__main__":
         "city": "testhausen"
         }
     # db_test.add_user(inp)
-    print(db_test.complete_user(new_data, "5ae0cb4d-5b28-417e-9658-971f37493814"))
+    print(db_test.complete_user(new_data, "46361bba-957f-4936-ac86-a75558569be2"))
     print(db_test.get_user('h@b.de'))
+    db_test.del_user("46361bba-957f-4936-ac86-a75558569be2")
+    
