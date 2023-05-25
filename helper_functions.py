@@ -195,7 +195,7 @@ class Database_helper():
             return "ERROR"
         
         
-        # Get Check Private Data
+        # Get/Check Private Data
         self.__curs.execute(f"""
                             SELECT *
                             FROM PRIVATE_DATA
@@ -216,7 +216,28 @@ class Database_helper():
             self.__curs.execute(sql_sttmnt_PD, [uid, new_data["birthday"], new_data["phone"]])
         
         
-        # sql_sttmnt_ADDRESS = f"""INSERT OR REPLACE Into ADDRESS (UID, STREET, NUMBER, POSTALCODE, CITY) WHERE UID={uid} VALUES(?,?,?,?,?)"""
+        # Get/Check Address
+        self.__curs.execute(f"""
+                            SELECT *
+                            FROM ADDRESS
+                            WHERE UID='{uid}'
+                            """)
+        data_AD = self.__curs.fetchall()
+        if len(data_AD) == 1:
+            uid_tmp, birth, phone = data_PD[0]
+            print(f"The User with the ID {uid}, has been found. Getting and Updating Data")
+            sql_sttmnt_ADDRESS = f"UPDATE ADDRESS SET STREET = ?, NUMBER = ? , POSTALCODE = ?, CITY = ? WHERE UID={uid}"
+            self.__curs.execute(sql_sttmnt_ADDRESS, [new_data["street"], new_data["number"], new_data["postal"], new_data["city"]])
+        elif len(data_AD) > 1:
+            print("Es wurden mehrer Nutzer mit der gleichen ID gefunden. Bitte wenden sie sich an ihren Andministrator!")
+            return "ERROR"
+        else:
+            print(f"NO User with the id {uid}, has been found.Adding privata Data for this User")
+            sql_sttmnt_ADDRESS = f"""INSERT Into ADDRESS (UID, STREET, NUMBER, POSTALCODE, CITY) VALUES(?,?,?,?,?)"""
+            self.__curs.execute(sql_sttmnt_ADDRESS, [uid, new_data["street"], new_data["number"], new_data["postal"], new_data["city"]])
+        
+        
+        # 
         # sql_sttmnt_BANK = f"""INSERT OR REPLACE Into BANK (BIC, Name) WHERE BIC={userinputbic} VALUES(?,?)"""
         # sql_sttmnt_BD = f"""INSERT OR REPLACE Into BANKDATA (UID, IBAN, BIC) VALUES(?,?,?)"""
         
@@ -260,6 +281,14 @@ class Database_helper():
 if __name__ == "__main__":
     db_test = Database_helper('Data/test.db')
     inp = ['test', 'Test12', 'h@b.de']
+    new_data = {
+        "birthday": "20.08.2003",
+        "phone": "0125468423543",
+        "street": "TestStreet",
+        "number": 18,
+        "postal": 45438,
+        "city": "testhausen"
+        }
     # db_test.add_user(inp)
-    # print(db_test.complete_user({"birthday": "20.08.2003", "phone": "0125468423543"}, "5ae0cb4d-5b28-417e-9658-971f37493814"))
+    print(db_test.complete_user(new_data, "5ae0cb4d-5b28-417e-9658-971f37493814"))
     print(db_test.get_user('h@b.de'))
