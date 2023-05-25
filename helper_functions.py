@@ -94,7 +94,6 @@ class Database_helper():
                     );""")
             print("Table BANKDATA Created!")
 
-
         # Check and/or create ADDRESS Table
         self.__curs.execute("""
                     SELECT count(name)
@@ -155,13 +154,13 @@ class Database_helper():
                 self.__loop_trys += 1
             else:
                 break
-            
+
         self.__curs.execute(f"""
                         SELECT count(EMAIL)
                         FROM USER
                         WHERE EMAIL='{data[2]}'
                         """)
-        
+
         if self.__curs.fetchone()[0] == 1:
             print(f"User with the EMAIL: {data[2]} already exists")
             print("No User added")
@@ -193,8 +192,7 @@ class Database_helper():
             NO User with the token {utoken},
             has been found""")
             return "ERROR"
-        
-        
+
         # Get/Check Private Data
         self.__curs.execute(f"""
                             SELECT *
@@ -214,8 +212,7 @@ class Database_helper():
             print(f"NO User with the id {uid}, has been found.Adding privata Data for this User")
             sql_sttmnt_PD = "INSERT INTO PRIVATE_DATA(UID, BIRTHDAY, PHONE) VALUES(?,?,?)"
             self.__curs.execute(sql_sttmnt_PD, [uid, new_data["birthday"], new_data["phone"]])
-        
-        
+
         # Get/Check Address
         self.__curs.execute(f"""
                             SELECT *
@@ -235,12 +232,12 @@ class Database_helper():
             print(f"NO User with the id {uid}, has been found.Adding privata Data for this User")
             sql_sttmnt_ADDRESS = f"""INSERT Into ADDRESS (UID, STREET, NUMBER, POSTALCODE, CITY) VALUES(?,?,?,?,?)"""
             self.__curs.execute(sql_sttmnt_ADDRESS, [uid, new_data["street"], new_data["number"], new_data["postal"], new_data["city"]])
-        
-        
+
+
         # 
         # sql_sttmnt_BANK = f"""INSERT OR REPLACE Into BANK (BIC, Name) WHERE BIC={userinputbic} VALUES(?,?)"""
         # sql_sttmnt_BD = f"""INSERT OR REPLACE Into BANKDATA (UID, IBAN, BIC) VALUES(?,?,?)"""
-        
+
         self.__db.commit()
         return uid
 
@@ -261,7 +258,7 @@ class Database_helper():
                             BANKDATA.IBAN,
                             BANKDATA.BIC,
                             BANK.NAME
-                             
+
                             from USER
                             LEFT JOIN PRIVATE_DATA
                             ON USER.UID = PRIVATE_DATA.UID
@@ -276,10 +273,9 @@ class Database_helper():
         extracted_data = self.__curs.fetchall()
         self.__db.commit()
         return extracted_data
-    
-    
+
     def del_user(self, utoken) -> None:
-        
+
         # Get UserID based on Token
         self.__curs.execute(f"""
                             SELECT *
@@ -300,7 +296,7 @@ class Database_helper():
             NO User with the token {utoken},
             has been found. It might be deleted already""")
             return "ERROR"
-        
+
         self.__curs.execute(f"""
                             DELETE 
                             from USER
@@ -312,19 +308,19 @@ class Database_helper():
                             from PRIVATE_DATA
                             WHERE PRIVATE_DATA.UID='{uid}'
                             """)
-        
+
         self.__curs.execute(f"""
                             DELETE 
                             from ADDRESS
                             WHERE ADDRESS.UID='{uid}'
                             """)
-        
+
         self.__curs.execute(f"""
                             DELETE 
                             from BANKDATA
                             WHERE BANKDATA.UID='{uid}'
                             """)
-        
+
         self.__db.commit()
 
 
@@ -343,4 +339,3 @@ if __name__ == "__main__":
     print(db_test.complete_user(new_data, "46361bba-957f-4936-ac86-a75558569be2"))
     print(db_test.get_user('h@b.de'))
     db_test.del_user("46361bba-957f-4936-ac86-a75558569be2")
-    
