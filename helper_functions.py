@@ -1,3 +1,11 @@
+"""
+Helper function for Erasmus Website Projekt
+
+Contains:
+Generate DB
+
+Creator:    Florian Hillebold
+"""
 import sqlite3 as sq3
 from uuid import uuid4
 
@@ -8,6 +16,12 @@ class Generate_db():
     and is used to manipulate
     """
     def __init__(self, path_2_db: str) -> None:
+        """
+        Initialize Databas and generate Tables if needed.
+
+        Args:
+            path_2_db (str): Path to databasefile
+        """
         self.__db = sq3.connect(database=path_2_db)
         self.__curs = self.__db.cursor()
         self.__tokenlength = 16
@@ -117,6 +131,17 @@ class Generate_db():
         self.__db.commit()
 
     def add_user(self, data: list, max_trys=10) -> None:
+        """
+        Add a User and generate a userspecific token
+
+        Args:
+            data (list): specified data as List containing
+                            - Firstname
+                            - Name
+                            - e-Mail
+            max_trys (int, optional): Try of loop trying to generate
+                                      token. Defaults to 10.
+        """
         sql_statement = """
                         INSERT INTO USER
                         (USERTOKEN,
@@ -167,7 +192,27 @@ class Generate_db():
             self.__db.commit()
 
     def complete_user(self, new_data: dict, utoken: str) -> str:
+        """
+        Complete userdate with private information.
 
+        Args:
+            new_data (dict): Dict has to look like this
+                                {
+                                "birthday": date,
+                                "phone": str,
+                                "street": str,
+                                "number": int,
+                                "postal": int,
+                                "city": str,
+                                "iban": str,
+                                "bic": str,
+                                "bankbez": str
+                                }
+            utoken (str): usergenerated token out of the Database
+
+        Returns:
+            str: Returns the userid if succeful or "ERROR" if unsuccessful.
+        """
         # Get UserID based on Token
         self.__curs.execute(f"""
                             SELECT *
@@ -378,7 +423,17 @@ class Generate_db():
         self.__db.commit()
         return uid
 
-    def get_user(self, mail) -> list:
+    def get_user(self, mail: str) -> list:
+        """
+        Returns all Userdate by inputing the Mail
+
+        Args:
+            mail (str): Usermailaddress
+
+        Returns:
+            list: returns a List of all Informations
+            for that specific user
+        """
         self.__curs.execute(f"""
                             select
                             USER.UID,
@@ -411,8 +466,13 @@ class Generate_db():
         self.__db.commit()
         return extracted_data
 
-    def del_user(self, utoken) -> None:
+    def del_user(self, utoken: str) -> None:
+        """
+        Delets all user specific Data
 
+        Args:
+            utoken (str): UUID of the User that should be deleted!
+        """
         # Get UserID based on Token
         self.__curs.execute(f"""
                             SELECT *
