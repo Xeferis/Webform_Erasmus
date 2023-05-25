@@ -3,7 +3,7 @@ from random import randint
 from uuid import uuid4
 
 
-class Database_helper():
+class Generate_db():
     """
     Generates all User-Databases
     and is used to manipulate
