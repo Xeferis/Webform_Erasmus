@@ -1,5 +1,4 @@
 import sqlite3 as sq3
-from random import randint
 from uuid import uuid4
 
 
