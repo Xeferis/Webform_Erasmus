@@ -27,7 +27,7 @@ class Database_helper():
         else:
             self.__curs.execute("""
                     CREATE TABLE USER
-                    (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    (UID INTEGER PRIMARY KEY AUTOINCREMENT,
                     USERTOKEN CHAR(32) NOT NULL,
                     FIRSTNAME CHAR(20) NOT NULL,
                     NAME CHAR(20) NOT NULL,
@@ -48,10 +48,10 @@ class Database_helper():
         else:
             self.__curs.execute("""
                     CREATE TABLE PRIVATE_DATA
-                    (UID INTEGER NOT NULL,
+                    (UID INTEGER,
                     BIRTHDAY DATE,
                     PHONE CHAR(20),
-                    FOREIGN KEY(UID) REFERENCES USER(ID)
+                    FOREIGN KEY(UID) REFERENCES USER(UID)
                     );""")
             print("Table PRIVATE_DATA Created!")
 
@@ -86,31 +86,14 @@ class Database_helper():
         else:
             self.__curs.execute("""
                     CREATE TABLE BANKDATA
-                    (UID INTEGER NOT NULL,
+                    (UID INTEGER,
                     IBAN CHAR(22),
                     BIC CHAR(11),
-                    FOREIGN KEY(UID) REFERENCES USER(ID)
+                    FOREIGN KEY(UID) REFERENCES USER(UID)
                     FOREIGN KEY(BIC) REFERENCES BANK(BIC)
                     );""")
             print("Table BANKDATA Created!")
 
-        # Check and/or create CITY Table
-        self.__curs.execute("""
-                    SELECT count(name)
-                    FROM sqlite_master
-                    WHERE type='table'
-                    AND name='CITY'
-                    """)
-
-        if self.__curs.fetchone()[0] == 1:
-            print("Table CITY exists")
-        else:
-            self.__curs.execute("""
-                    CREATE TABLE CITY
-                    (ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    NAME CHAR(22)
-                    );""")
-            print("Table CITY Created!")
 
         # Check and/or create ADDRESS Table
         self.__curs.execute("""
@@ -125,13 +108,12 @@ class Database_helper():
         else:
             self.__curs.execute("""
                     CREATE TABLE ADDRESS
-                    (UID INTEGER NOT NULL,
-                    CITY_ID INTEGER,
-                    STREET CHAR(50),
-                    NUMBER INTEGER,
-                    POSTALCODE INTEGER,
-                    FOREIGN KEY(UID) REFERENCES USER(ID),
-                    FOREIGN KEY(CITY_ID) REFERENCES CITY(ID)
+                    (UID INTEGER,
+                    STREET CHAR(50) NOT NULL,
+                    NUMBER INTEGER NOT NULL,
+                    POSTALCODE INTEGER NOT NULL,
+                    CITY CHAR(50) NOT NULL,
+                    FOREIGN KEY(UID) REFERENCES USER(UID)
                     );""")
             print("Table ADDRESS Created!")
 
@@ -189,12 +171,7 @@ class Database_helper():
             self.__curs.execute(sql_statement, data)
             self.__db.commit()
 
-    def complete_user(self, data: dict, token: str) -> str:
-        sql_sttmnt_PD = """INSERT Into PRIVATE_DATA"""
-        sql_sttmnt_CITY = """INSERT Into CITY"""
-        sql_sttmnt_ADDRESS = """INSERT Into ADDRESS"""
-        sql_sttmnt_BANK = """INSERT Into BANK"""
-        sql_sttmnt_BD = """INSERT Into BANKDATA"""
+    def complete_user(self, new_data: dict, token: str) -> str:
 
         # Get UserID based on Token
         self.__curs.execute(f"""
@@ -217,12 +194,72 @@ class Database_helper():
             has been found""")
             return "ERROR"
         
+        
+        # Get Check Private Data
+        self.__curs.execute(f"""
+                            SELECT *
+                            FROM PRIVATE_DATA
+                            WHERE UID='{uid}'
+                            """)
+        data_PD = self.__curs.fetchall()
+        if len(data_PD) == 1:
+            uid_tmp, birth, phone = data_PD[0]
+            print(f"The User with the ID {uid}, has been found. Getting and Updating Data")
+            sql_sttmnt_PD = f"UPDATE PRIVATE_DATA SET BIRTHDAY = ?, PHONE = ? WHERE UID={uid}"
+            self.__curs.execute(sql_sttmnt_PD, [new_data["birthday"], new_data["phone"]])
+        elif len(data_PD) > 1:
+            print("Es wurden mehrer Nutzer mit der gleichen ID gefunden. Bitte wenden sie sich an ihren Andministrator!")
+            return "ERROR"
+        else:
+            print(f"NO User with the id {uid}, has been found.Adding privata Data for this User")
+            sql_sttmnt_PD = "INSERT INTO PRIVATE_DATA(UID, BIRTHDAY, PHONE) VALUES(?,?,?)"
+            self.__curs.execute(sql_sttmnt_PD, [uid, new_data["birthday"], new_data["phone"]])
+        
+        
+        # sql_sttmnt_ADDRESS = f"""INSERT OR REPLACE Into ADDRESS (UID, STREET, NUMBER, POSTALCODE, CITY) WHERE UID={uid} VALUES(?,?,?,?,?)"""
+        # sql_sttmnt_BANK = f"""INSERT OR REPLACE Into BANK (BIC, Name) WHERE BIC={userinputbic} VALUES(?,?)"""
+        # sql_sttmnt_BD = f"""INSERT OR REPLACE Into BANKDATA (UID, IBAN, BIC) VALUES(?,?,?)"""
+        
+        self.__db.commit()
         return uid
 
+    def get_user(self, mail) -> list:
+        self.__curs.execute(f"""
+                            select 
+                            USER.UID,
+                            USER.NAME,
+                            USER.FIRSTNAME,
+                            USER.USERTOKEN,
+                            USER.EMAIL,
+                            PRIVATE_DATA.BIRTHDAY,
+                            PRIVATE_DATA.PHONE,
+                            ADDRESS.STREET,
+                            ADDRESS.NUMBER,
+                            ADDRESS.POSTALCODE,
+                            ADDRESS.CITY,
+                            BANKDATA.IBAN,
+                            BANKDATA.BIC,
+                            BANK.NAME
+                             
+                            from USER
+                            LEFT JOIN PRIVATE_DATA
+                            ON USER.UID = PRIVATE_DATA.UID
+                            LEFT JOIN ADDRESS
+                            ON USER.UID = ADDRESS.UID
+                            LEFT JOIN BANKDATA
+                            ON USER.UID = BANKDATA.UID
+                            LEFT JOIN BANK
+                            ON BANKDATA.BIC = BANK.BIC
+                            WHERE USER.EMAIL='{mail}'
+                            """)
+        extracted_data = self.__curs.fetchall()
+        self.__db.commit()
+        return extracted_data
 
 
 if __name__ == "__main__":
     db_test = Database_helper('Data/test.db')
-    inp = ['test', 'Test12', 'h@c.de']
+    inp = ['test', 'Test12', 'h@b.de']
     # db_test.add_user(inp)
-    print(db_test.complete_user([], "b786b4b7-9e4f-47a2-81d1-a815377ec9fe"))
+    # print(db_test.complete_user({"birthday": "20.08.2003", "phone": "0125468423543"}, "5ae0cb4d-5b28-417e-9658-971f37493814"))
+    print(db_test.get_user('h@b.de'))
