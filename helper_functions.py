@@ -622,13 +622,19 @@ class Generate_db_admin():
         else:
             return "No Admin has been found"
 
-    def change_pw(self, username: str, email: str, old_pw: str, new_pw: str) -> None:
+    def change_pw(self,
+                  username: str,
+                  email: str,
+                  old_pw: str,
+                  new_pw: str) -> None:
         """
         Changing the Admin password of an existing Admin
 
         Args:
-            username (str): username of the admin that would change the password
-            email (str): email of the admin that would change the password
+            username (str): username of the admin that
+                            would change the password
+            email (str): email of the admin that would
+                            change the password
         """
         self.__curs.execute(f"""
                         SELECT *
@@ -707,7 +713,8 @@ def test_user_db():
         "bankbez": "Deutsche Test Bank eV"
         }
     # db_test.add_user(inp)
-    # print(db_test.complete_user(new_data, "ca883e0a-192a-467e-a61e-128a57c0806a"))
+    # print(db_test.complete_user(new_data,
+    #       "ca883e0a-192a-467e-a61e-128a57c0806a"))
     print(db_test.get_user('h@b.de'))
     # db_test.del_user("ca883e0a-192a-467e-a61e-128a57c0806a")
     # print(db_test.get_user('h@b.de'))
@@ -715,10 +722,14 @@ def test_user_db():
 
 def test_admin_db():
     db_test = Generate_db_admin('Data/test_ad.db')
-    inp = ['TestUsername', 'admn_test', 'admn_Test12', 'admn_h@b.de', 'sdfj1ud783']
+    inp = ['TestUsername',
+           'admn_test',
+           'admn_Test12',
+           'admn_h@b.de',
+           'sdfj1ud783']
 
     # Add Test
-    # db_test.add_admin(inp)
+    db_test.add_admin(inp)
     print(db_test.get_admin('admn_h@b.de'))
 
     # Del Test
@@ -728,7 +739,10 @@ def test_admin_db():
     # print(db_test.get_admin('admn_h@b.de'))
 
     # Change PW
-    # db_test.change_pw('TestUsername', 'admn_h@b.de', 'sdfj1ud783', 'dksjhf82')
+    # db_test.change_pw('TestUsername',
+    #                   'admn_h@b.de',
+    #                   'sdfj1ud783',
+    #                   'dksjhf82')
     # print(db_test.get_admin('admn_h@b.de'))
 
 
