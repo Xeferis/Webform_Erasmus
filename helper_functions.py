@@ -10,7 +10,7 @@ import sqlite3 as sq3
 from uuid import uuid4
 
 
-class Generate_db():
+class Generate_db_user():
     """
     Generates all User-Databases
     and is used to manipulate
@@ -153,7 +153,7 @@ class Generate_db():
                         """
         loop_trys = 0
 
-        if len(data) > 8:
+        if len(data) > 3:
             print("Too much data given!")
             return
 
@@ -518,8 +518,182 @@ class Generate_db():
         self.__db.commit()
 
 
-if __name__ == "__main__":
-    db_test = Generate_db('Data/test.db')
+class Generate_db_admin():
+    """
+    Generates all Admin-Databases
+    and is used to manipulate
+    """
+    def __init__(self, path_2_db: str) -> None:
+        """
+        ADMIN
+        Initialize Database and generate Tables if needed.
+
+        Args:
+            path_2_db (str): Path to databasefile
+        """
+        self.__db = sq3.connect(database=path_2_db)
+        self.__curs = self.__db.cursor()
+        self.__tokenlength = 16
+
+        # Check and/or create ADMIN Table
+        self.__curs.execute("""
+                    SELECT count(name)
+                    FROM sqlite_master
+                    WHERE type='table'
+                    AND name='ADMIN'
+                    """)
+
+        if self.__curs.fetchone()[0] == 1:
+            print("Table ADMIN exists")
+        else:
+            self.__curs.execute("""
+                    CREATE TABLE ADMIN
+                    (AUID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    USERNAME CHAR(32) NOT NULL,
+                    FIRSTNAME CHAR(20) NOT NULL,
+                    NAME CHAR(20) NOT NULL,
+                    EMAIL CHAR(25) NOT NULL,
+                    PASSWORD CHAR(16) NOT NULL
+                    );""")
+            print("Table ADMIN Created!")
+
+    def add_admin(self, data: list) -> None:
+        """
+        Add a User and generate a userspecific token
+
+        Args:
+            data (list): specified data as List containing
+                            - Username
+                            - Firstname
+                            - Name
+                            - e-Mail
+                            - Passwort
+        """
+        sql_statement = """
+                        INSERT INTO ADMIN
+                        (USERNAME,
+                        FIRSTNAME,
+                        NAME,
+                        EMAIL,
+                        PASSWORD
+                        )
+                        VALUES(?,?,?,?,?)
+                        """
+
+        if len(data) > 5:
+            print("Too much data given!")
+            return
+
+        self.__curs.execute(f"""
+                        SELECT count(EMAIL)
+                        FROM ADMIN
+                        WHERE EMAIL='{data[3]}'
+                        """)
+
+        if self.__curs.fetchone()[0] == 1:
+            print(f"Admin with the EMAIL: {data[3]} already exists")
+            print("No Admin added")
+            self.__db.commit()
+        else:
+            print(f"Adding new Admin with Username {data[0]}")
+            self.__curs.execute(sql_statement, data)
+            self.__db.commit()
+
+    def get_admin(self, mail: str) -> list:
+        """
+        Returns all Admindata by inputing the Mail
+
+        Args:
+            mail (str): Adminusermailaddress
+
+        Returns:
+            list: returns a List of all Informations
+            for that specific Admin
+        """
+        self.__curs.execute(f"""
+                            SELECT *
+                            FROM ADMIN
+                            WHERE EMAIL='{mail}'
+                            """)
+        extracted_data = self.__curs.fetchall()
+        self.__db.commit()
+        if len(extracted_data) > 0:
+            return extracted_data
+        else:
+            return "No Admin has been found"
+
+    def change_pw(self, username: str, email: str, old_pw: str, new_pw: str) -> None:
+        """
+        Changing the Admin password of an existing Admin
+
+        Args:
+            username (str): username of the admin that would change the password
+            email (str): email of the admin that would change the password
+        """
+        self.__curs.execute(f"""
+                        SELECT *
+                        FROM ADMIN
+                        WHERE USERNAME='{username}'
+                        AND EMAIL='{email}'
+                        """)
+
+        data = self.__curs.fetchall()
+        if len(data) == 1:
+            print(f"Admin with the EMAIL: {email} has been found")
+            auid, username, name, fname, email, pw = data[0]
+            if pw == old_pw:
+                print("The entered Password was correct")
+                sql_stmnt = f"""
+                            UPDATE ADMIN
+                            SET
+                            PASSWORD = ?
+                            WHERE AUID={auid}
+                            """
+                self.__curs.execute(sql_stmnt, [new_pw])
+            else:
+                print("The entered Password was incorrect")
+        self.__db.commit()
+
+    def del_admin(self, username: str, email: str, pw: str) -> None:
+        """
+        Delets all Admin specific Data
+
+        Args:
+            pw (str): Password of the Admin that should be deleted!
+            username (str): Username of the Admin that should be deleted!
+        """
+        # Get UserID based on Token
+        self.__curs.execute(f"""
+                            SELECT *
+                            FROM ADMIN
+                            WHERE PASSWORD='{pw}'
+                            AND USERNAME='{username}'
+                            AND EMAIL='{email}'
+                            """)
+        data = self.__curs.fetchall()
+        if len(data) == 1:
+            auid, username, name, fname, email, pw = data[0]
+            print(f"""
+            The Admin with the Username {username},
+            has been found and gets deleted""")
+
+            self.__curs.execute(f"""
+                            DELETE
+                            from ADMIN
+                            WHERE ADMIN.AUID='{auid}'
+                            """)
+
+        elif len(data) > 1:
+            print("Es wurden mehrer Nutzer mit dem gleichen Username gefunden. \
+                  Bitte wenden sie sich an ihren Keyuser!")
+        else:
+            print(f"No Admin with the Username: {username}, \
+            has been found. It might be deleted already")
+        self.__db.commit()
+
+
+def test_user_db():
+    db_test = Generate_db_user('Data/test.db')
     inp = ['test', 'Test12', 'h@b.de']
     new_data = {
         "birthday": "20.08.2003",
@@ -533,6 +707,30 @@ if __name__ == "__main__":
         "bankbez": "Deutsche Test Bank eV"
         }
     # db_test.add_user(inp)
-    # print(db_test.complete_user(new_data, "e64e3873-f7fc-4559-85d9-6c1cb159016e"))
+    # print(db_test.complete_user(new_data, "ca883e0a-192a-467e-a61e-128a57c0806a"))
+    print(db_test.get_user('h@b.de'))
+    db_test.del_user("ca883e0a-192a-467e-a61e-128a57c0806a")
     # print(db_test.get_user('h@b.de'))
-    db_test.del_user("e64e3873-f7fc-4559-85d9-6c1cb159016e")
+
+
+def test_admin_db():
+    db_test = Generate_db_admin('Data/test_ad.db')
+    inp = ['TestUsername', 'admn_test', 'admn_Test12', 'admn_h@b.de', 'sdfj1ud783']
+
+    # Add Test
+    # db_test.add_admin(inp)
+    print(db_test.get_admin('admn_h@b.de'))
+
+    # Del Test
+    # db_test.del_admin('TestUsername',
+    #                   'admn_h@b.de',
+    #                   'sdfj1ud783')
+    # print(db_test.get_admin('admn_h@b.de'))
+
+    # Change PW
+    # db_test.change_pw('TestUsername', 'admn_h@b.de', 'sdfj1ud783', 'dksjhf82')
+    # print(db_test.get_admin('admn_h@b.de'))
+
+
+if __name__ == "__main__":
+    # test_user_db()
