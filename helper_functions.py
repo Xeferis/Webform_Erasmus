@@ -709,7 +709,7 @@ def test_user_db():
     # db_test.add_user(inp)
     # print(db_test.complete_user(new_data, "ca883e0a-192a-467e-a61e-128a57c0806a"))
     print(db_test.get_user('h@b.de'))
-    db_test.del_user("ca883e0a-192a-467e-a61e-128a57c0806a")
+    # db_test.del_user("ca883e0a-192a-467e-a61e-128a57c0806a")
     # print(db_test.get_user('h@b.de'))
 
 
@@ -733,4 +733,4 @@ def test_admin_db():
 
 
 if __name__ == "__main__":
-    # test_user_db()
+    test_user_db()

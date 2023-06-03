@@ -1,25 +1,31 @@
 {% extends "base.html"%}
 
 {%block title%}
-Home - Erasmus
+Register - Erasmus
 {%endblock%}
 
 {%block body%}
+
 <body>
     <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
         <div class="container"><a class="navbar-brand logo" href="#">Erasmus</a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="{{url_for('start')}}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{url_for('start')}}">Home</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-    <main class="page landing-page">
-        <section class="clean-block clean-hero" style="background-image: url(&quot;assets/img/tech/image4.jpg&quot;);color: rgba(9, 162, 255, 0.85);">
-            <div class="text">
-                <h2>Ersamus Anmeldung</h2>
-                <p>Zur Eingabe ihrer Daten wird ein UserToken benötig, diesen Token bekommen sie von ihrem Schulinstitut.</p><a class="btn btn-outline-light btn-lg" type="button" href="{{url_for('register_user')}}">Daten eingeben</a>
+    <main class="page registration-page">
+        <section class="clean-block clean-form dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">Registration</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in, mattis vitae leo.</p>
+                </div>
+                <form>
+                    <div class="mb-3"><label class="form-label" for="email">Usertoken</label><input class="form-control item" type="email" id="email"></div><button class="btn btn-primary" type="submit">Anmelden</button>
+                </form>
             </div>
         </section>
     </main>
@@ -51,4 +57,5 @@ Home - Erasmus
     <script src="assets/js/vanilla-zoom.js"></script>
     <script src="assets/js/theme.js"></script>
 </body>
+
 {%endblock%}

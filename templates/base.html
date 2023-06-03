@@ -1,26 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" style="width: 100%; height: 100%;">
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  {% block custom_meta %}{% endblock %}
-  <title>{% block title %}{% endblock %}</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{%block title%}{%endblock%}</title>
+    <meta name="description" content="Erasmus Webform">
+    <link rel="stylesheet" href="static/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/assets/css/Montserrat.css">
+    <link rel="stylesheet" href="static/assets/css/baguetteBox.min.css">
+    <link rel="stylesheet" href="static/assets/css/vanilla-zoom.min.css">
 </head>
-<body class="h-100 w-100 bg-dark bg-gradient">
-    <div class="w-100 h-100 d-flex">
-        <div class="d-flex h-100 w-100 flex-column mx-auto justify-content-center text-light">
-            <header class="mb-auto text-center">
-                <h1>OVM Erasmus</h1>
-            </header>
-                {% block content%}
-                {% endblock %}
-            <footer class="mt-auto text-center">
-                <p>Erstellt von: Florian Hillebold</p>
-            </footer>
-        </div>
-    </div>
-</body>
+{%block body%}{%endblock%}
 </html>
