@@ -5,71 +5,31 @@ Userdata - Erasmus
 {%endblock%}
 
 {%block body%}
-
-<body>
-    <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
-        <div class="container"><a class="navbar-brand logo" href="#">Erasmus</a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{url_for('start')}}">Home</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <main class="page contact-us-page">
-        <section class="clean-block clean-form dark">
-            <div class="container">
-                <div class="block-heading">
-                    <h2 class="text-info">Bitte geben Sie ihre Daten ein</h2>
-                    <p>Bitte füllen sie alle fehldenden Daten aus!</p>
-                </div>
-                <form>
-                    <div class="mb-3"><label class="form-label" for="name">Vorname</label><input class="form-control" type="text" id="fname" name="name"></div>
-                    <div class="mb-3"><label class="form-label" for="subject">Nachname</label><input class="form-control" type="text" id="lname" name="subject"></div>
-                    <div class="mb-3"><label class="form-label" for="email">Email</label><input class="form-control" type="email" id="email" name="email"></div>
-                    <div class="mb-3"><label class="form-label" for="birth">Geburtstag</label><input class="form-control" id="birth" type="date"></div>
-                    <div class="mb-3"><label class="form-label" for="telefon">Telefon</label><input class="form-control" type="tel" id="telefon"></div>
-                    <h2 class="pt-4">Addresse</h2>
-                    <div class="mb-3"><label class="form-label" for="street">Straße</label><input class="form-control" type="text" id="street" name="name"></div>
-                    <div class="mb-3"><label class="form-label" for="hnumber">Hausnummer</label><input class="form-control" type="number" id="hnumber"></div>
-                    <div class="mb-3"><label class="form-label" for="postal">Postleitzahl</label><input class="form-control" type="number" id="postal"></div>
-                    <div class="mb-3"><label class="form-label" for="city">Wohnort</label><input class="form-control" type="text" id="city" name="name"></div>
-                    <h2 class="pt-4">Bankdaten</h2>
-                    <div class="mb-3"><label class="form-label" for="iban">IBan</label><input class="form-control" type="text" id="iban" name="name"></div>
-                    <div class="mb-3"><label class="form-label" for="bic">BIC</label><input class="form-control" type="text" id="bic" name="name"></div>
-                    <div class="mb-3"><label class="form-label" for="bi">Bankinstitut</label><input class="form-control" type="text" id="bi" name="name"></div>
-                    <div class="mb-3"><button class="btn btn-primary" type="submit">Send</button></div>
-                </form>
-            </div>
-        </section>
-    </main>
-    <footer class="page-footer dark">
+<main class="page contact-us-page">
+    <section class="clean-block clean-form dark">
         <div class="container">
-            <div class="row">
-                <div class="col-sm-3">
-                    <h5>Get started</h5>
-                    <ul>
-                        <li><a href="{{url_for('start')}}">Home</a></li>
-                        <li><a href="{{url_for('register_user')}}">Anmelden</a></li>
-                    </ul>
-                </div>
-                <div class="col-sm-3">
-                    <h5>Support</h5>
-                    <ul>
-                        <li><a href="{{url_for('admin_login')}}">Admin</a></li>
-                    </ul>
-                </div>
+            <div class="block-heading">
+                <h2 class="text-info">Bitte geben Sie ihre Daten ein</h2>
+                <p>Bitte füllen sie alle fehldenden Daten aus!</p>
             </div>
+            <form>
+                <div class="mb-3"><label class="form-label" for="name">Vorname</label><input class="form-control" type="text" id="fname" name="name"></div>
+                <div class="mb-3"><label class="form-label" for="subject">Nachname</label><input class="form-control" type="text" id="lname" name="subject"></div>
+                <div class="mb-3"><label class="form-label" for="email">Email</label><input class="form-control" type="email" id="email" name="email"></div>
+                <div class="mb-3"><label class="form-label" for="birth">Geburtstag</label><input class="form-control" id="birth" type="date"></div>
+                <div class="mb-3"><label class="form-label" for="telefon">Telefon</label><input class="form-control" type="tel" id="telefon"></div>
+                <h2 class="pt-4">Addresse</h2>
+                <div class="mb-3"><label class="form-label" for="street">Straße</label><input class="form-control" type="text" id="street" name="name"></div>
+                <div class="mb-3"><label class="form-label" for="hnumber">Hausnummer</label><input class="form-control" type="number" id="hnumber"></div>
+                <div class="mb-3"><label class="form-label" for="postal">Postleitzahl</label><input class="form-control" type="number" id="postal"></div>
+                <div class="mb-3"><label class="form-label" for="city">Wohnort</label><input class="form-control" type="text" id="city" name="name"></div>
+                <h2 class="pt-4">Bankdaten</h2>
+                <div class="mb-3"><label class="form-label" for="iban">IBan</label><input class="form-control" type="text" id="iban" name="name"></div>
+                <div class="mb-3"><label class="form-label" for="bic">BIC</label><input class="form-control" type="text" id="bic" name="name"></div>
+                <div class="mb-3"><label class="form-label" for="bi">Bankinstitut</label><input class="form-control" type="text" id="bi" name="name"></div>
+                <div class="mb-3"><button class="btn btn-primary" type="submit">Send</button></div>
+            </form>
         </div>
-        <div class="footer-copyright">
-            <p>© 2023 Erasmus</p>
-        </div>
-    </footer>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/baguetteBox.min.js"></script>
-    <script src="assets/js/vanilla-zoom.js"></script>
-    <script src="assets/js/theme.js"></script>
-</body>
-
+    </section>
+</main>
 {%endblock%}
