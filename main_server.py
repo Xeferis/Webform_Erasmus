@@ -48,6 +48,7 @@ def admin_new_user():
                                uuid=token,
                                user=dict(request.form))
 
+
 @server.route('/admin_userdatabase')
 def admin_allusers():
     udb = hf.Generate_db_user("Data/test.db")
@@ -59,12 +60,28 @@ def admin_allusers():
 
 @server.route('/register', methods=['GET', 'POST'])
 def register_user():
-    return render_template('registration.html')
+    if request.method == 'GET':
+        return render_template('registration.html')
+    else:
+        udb = hf.Generate_db_user("Data/test.db")
+        usertoken = dict(request.form)['token']
+        check, uid = udb.check_user(usertoken)
+        if check:
+            udb.close_connection()
+            return input_form(usertoken)
+        else:
+            udb.close_connection()
+            return render_template('usernotfound.html', uuid=usertoken)
 
 
 @server.route('/userform', methods=['GET', 'POST'])
-def input_form():
-    return render_template('user_data.html')
-
+def input_form(usertoken):
+    if request.method == 'GET':
+        return render_template('user_data.html', uuid=usertoken)
+    else:
+        data = dict(request.form)
+        udb = hf.Generate_db_user("Data/test.db")
+        udb.complete_user(data, usertoken)
+        return render_template('success.html')
 
 server.run("0.0.0.0", "5005")

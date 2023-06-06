@@ -200,6 +200,39 @@ class Generate_db_user():
 
         return str(token)
 
+    def check_user(self, utoken: str) -> tuple:
+        """check if a user is been generated
+
+        Args:
+            utoken (str): specific user id
+
+        Returns:
+            bool: true or false based on the outcome
+        """        
+        # Get UserID based on Token
+        self.__curs.execute(f"""
+                            SELECT *
+                            FROM USER
+                            WHERE USERTOKEN='{utoken}'
+                            """)
+        data = self.__curs.fetchall()
+        if len(data) == 1:
+            uid, token, name, fname, email = data[0]
+            print(f"""
+            The User with the token {utoken},
+            has been found""")
+            return (True, uid)
+        elif len(data) > 1:
+            print("Es wurden mehrer Nutzer mit dem gleichen Token gefunden. \
+                  Bitte wenden sie sich an ihren Andministrator!")
+            return False
+        else:
+            print(f"""
+            NO User with the token {utoken},
+            has been found""")
+            return (False,)
+        
+
     def complete_user(self, new_data: dict, utoken: str) -> str:
         """
         Complete userdate with private information.
@@ -222,28 +255,10 @@ class Generate_db_user():
         Returns:
             str: Returns the userid if succeful or "ERROR" if unsuccessful.
         """
-        # Get UserID based on Token
-        self.__curs.execute(f"""
-                            SELECT *
-                            FROM USER
-                            WHERE USERTOKEN='{utoken}'
-                            """)
-        data = self.__curs.fetchall()
-        if len(data) == 1:
-            uid, token, name, fname, email = data[0]
-            print(f"""
-            The User with the token {utoken},
-            has been found""")
-        elif len(data) > 1:
-            print("Es wurden mehrer Nutzer mit dem gleichen Token gefunden. \
-                  Bitte wenden sie sich an ihren Andministrator!")
+        if not self.check_user(utoken)[0]:
             return "ERROR"
         else:
-            print(f"""
-            NO User with the token {utoken},
-            has been found""")
-            return "ERROR"
-
+            _, uid = self.check_user(utoken)
         # Get/Check Private Data
         self.__curs.execute(f"""
                             SELECT *
