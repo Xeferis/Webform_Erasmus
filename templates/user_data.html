@@ -4,29 +4,30 @@
 Userdata - Erasmus
 {%endblock%}
 
-{%block body%}
+{%block content%}
 <main class="page contact-us-page">
     <section class="clean-block clean-form dark">
         <div class="container">
             <div class="block-heading">
                 <h2 class="text-info">Bitte geben Sie ihre Daten ein</h2>
                 <p>Bitte füllen sie alle fehldenden Daten aus!</p>
+                <p>Token: {{uuid}}</p>
             </div>
             <form method="post">
-                <div class="mb-3"><label class="form-label" for="name">Vorname</label><input class="form-control" type="text" id="fname" name="name"></div>
-                <div class="mb-3"><label class="form-label" for="subject">Nachname</label><input class="form-control" type="text" id="lname" name="subject"></div>
+                <div class="mb-3"><label class="form-label" for="fname">Vorname</label><input class="form-control" type="text" id="fname" name="fname"></div>
+                <div class="mb-3"><label class="form-label" for="lname">Nachname</label><input class="form-control" type="text" id="lname" name="lname"></div>
                 <div class="mb-3"><label class="form-label" for="email">Email</label><input class="form-control" type="email" id="email" name="email"></div>
-                <div class="mb-3"><label class="form-label" for="birth">Geburtstag</label><input class="form-control" id="birth" type="date"></div>
-                <div class="mb-3"><label class="form-label" for="telefon">Telefon</label><input class="form-control" type="tel" id="telefon"></div>
+                <div class="mb-3"><label class="form-label" for="birthday">Geburtstag</label><input class="form-control" id="birthday" type="date" name="birthday"></div>
+                <div class="mb-3"><label class="form-label" for="phone">Telefon</label><input class="form-control" type="tel" id="phone" name="phone"></div>
                 <h2 class="pt-4">Addresse</h2>
-                <div class="mb-3"><label class="form-label" for="street">Straße</label><input class="form-control" type="text" id="street" name="name"></div>
-                <div class="mb-3"><label class="form-label" for="hnumber">Hausnummer</label><input class="form-control" type="number" id="hnumber"></div>
-                <div class="mb-3"><label class="form-label" for="postal">Postleitzahl</label><input class="form-control" type="number" id="postal"></div>
-                <div class="mb-3"><label class="form-label" for="city">Wohnort</label><input class="form-control" type="text" id="city" name="name"></div>
+                <div class="mb-3"><label class="form-label" for="street">Straße</label><input class="form-control" type="text" id="street" name="street"></div>
+                <div class="mb-3"><label class="form-label" for="number">Hausnummer</label><input class="form-control" type="number" id="number" name="number"></div>
+                <div class="mb-3"><label class="form-label" for="postal">Postleitzahl</label><input class="form-control" type="number" id="postal" name="postal"></div>
+                <div class="mb-3"><label class="form-label" for="city">Wohnort</label><input class="form-control" type="text" id="city" name="city"></div>
                 <h2 class="pt-4">Bankdaten</h2>
-                <div class="mb-3"><label class="form-label" for="iban">IBan</label><input class="form-control" type="text" id="iban" name="name"></div>
-                <div class="mb-3"><label class="form-label" for="bic">BIC</label><input class="form-control" type="text" id="bic" name="name"></div>
-                <div class="mb-3"><label class="form-label" for="bi">Bankinstitut</label><input class="form-control" type="text" id="bi" name="name"></div>
+                <div class="mb-3"><label class="form-label" for="iban">IBan</label><input class="form-control" type="text" id="iban" name="iban"></div>
+                <div class="mb-3"><label class="form-label" for="bic">BIC</label><input class="form-control" type="text" id="bic" name="bic"></div>
+                <div class="mb-3"><label class="form-label" for="bankbez">Bankinstitut</label><input class="form-control" type="text" id="bankbez" name="bankbez"></div>
                 <div class="mb-3"><button class="btn btn-primary" type="submit">Send</button></div>
             </form>
         </div>

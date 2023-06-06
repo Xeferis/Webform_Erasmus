@@ -1,5 +1,5 @@
 import helper_functions as hf
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, abort
 
 
 # Init
@@ -64,24 +64,31 @@ def register_user():
         return render_template('registration.html')
     else:
         udb = hf.Generate_db_user("Data/test.db")
+        global usertoken
         usertoken = dict(request.form)['token']
         check, uid = udb.check_user(usertoken)
         if check:
             udb.close_connection()
-            return input_form(usertoken)
+            return redirect('addinguser')
         else:
             udb.close_connection()
             return render_template('usernotfound.html', uuid=usertoken)
 
 
-@server.route('/userform', methods=['GET', 'POST'])
-def input_form(usertoken):
+@server.route('/addinguser', methods=['GET', 'POST'])
+def adding_user():
     if request.method == 'GET':
-        return render_template('user_data.html', uuid=usertoken)
+        global usertoken
+        try:
+            return render_template('user_data.html', uuid=usertoken)
+        except:
+            abort(404)
     else:
         data = dict(request.form)
+        print(data)
         udb = hf.Generate_db_user("Data/test.db")
         udb.complete_user(data, usertoken)
         return render_template('success.html')
+
 
 server.run("0.0.0.0", "5005")

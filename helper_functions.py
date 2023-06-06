@@ -230,7 +230,7 @@ class Generate_db_user():
             print(f"""
             NO User with the token {utoken},
             has been found""")
-            return (False,)
+            return (False, "error")
         
 
     def complete_user(self, new_data: dict, utoken: str) -> str:
