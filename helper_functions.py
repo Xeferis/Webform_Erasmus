@@ -131,17 +131,19 @@ class Generate_db_user():
         self.content = self.get_all_users()
         self.__db.commit()
 
-    def add_user(self, data: list, max_trys=10) -> None:
+    def add_user(self, data: dict, max_trys=10) -> None:
         """
         Add a User and generate a userspecific token
 
         Args:
-            data (list): specified data as List containing
+            data (dict): specified data as List containing
                             - Firstname
                             - Name
                             - e-Mail
             max_trys (int, optional): Try of loop trying to generate
                                       token. Defaults to 10.
+        Return:
+            token (str)
         """
         sql_statement = """
                         INSERT INTO USER
@@ -156,7 +158,7 @@ class Generate_db_user():
 
         if len(data) > 3:
             print("Too much data given!")
-            return
+            return "ERROR"
 
         while True:
             token = str(uuid4())
@@ -180,17 +182,22 @@ class Generate_db_user():
         self.__curs.execute(f"""
                         SELECT count(EMAIL)
                         FROM USER
-                        WHERE EMAIL='{data[2]}'
+                        WHERE EMAIL='{data['email']}'
                         """)
 
         if self.__curs.fetchone()[0] == 1:
-            print(f"User with the EMAIL: {data[2]} already exists")
+            print(f"User with the EMAIL: {data['email']} already exists")
             print("No User added")
         else:
             print(f"Adding new User with ID {token}")
-            data.insert(0, token)
-            self.__curs.execute(sql_statement, data)
+            self.__curs.execute(
+                sql_statement, [token,
+                                data['fname'],
+                                data['lname'],
+                                data['email']])
             self.__db.commit()
+
+        return str(token)
 
     def complete_user(self, new_data: dict, utoken: str) -> str:
         """

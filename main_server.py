@@ -1,5 +1,5 @@
 import helper_functions as hf
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 
 
 # Init
@@ -33,6 +33,16 @@ def admin_newpassword():
 def admin_start():
     return render_template('admin.html')
 
+
+@server.route('/admin_generate_new_User', methods=['GET', 'POST'])
+def admin_new_user():
+    if request.method == 'GET':
+        return render_template('admin_newuser.html')
+    else:
+        token = udb.add_user(dict(request.form))
+        return render_template('user_generated.html',
+                               uuid=token,
+                               user=dict(request.form))
 
 @server.route('/admin_userdatabase')
 def admin_allusers():

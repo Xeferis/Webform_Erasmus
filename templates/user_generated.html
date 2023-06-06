@@ -1,0 +1,16 @@
+{% extends "admin_base.html"%}
+
+{%block title%}
+Generated User - Erasmus
+{%endblock%}
+
+
+{%block content%}
+<div class="container">
+    <div class="block-heading">
+        <h2 class="text-info">Token has been Generated for {{user.lname}}, {{user.fname}}.</h2>
+        <p>Please Copy it and send it to them via mail!</p>
+        <h1>{{uuid}}</h1>
+    </div>
+</div>
+{%endblock%}
