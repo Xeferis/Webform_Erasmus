@@ -11,11 +11,11 @@ Generate User - Erasmus
         <h2 class="text-info">Bitte gitb die Vorliegenden Daten des Nutzers ein</h2>
         <p>Klicke danach auf Generate, dann wird ein eindeutiger Usertoken erstellt!</p>
     </div>
-    <form>
-        <div class="mb-3"><label class="form-label" for="name">Vorname</label><input class="form-control" type="text"
-                id="fname" name="name"></div>
-        <div class="mb-3"><label class="form-label" for="subject">Nachname</label><input class="form-control" type="text"
-                id="lname" name="subject"></div>
+    <form method="post">
+        <div class="mb-3"><label class="form-label" for="fname">Vorname</label><input class="form-control" type="text"
+                id="fname" name="fname"></div>
+        <div class="mb-3"><label class="form-label" for="lname">Nachname</label><input class="form-control" type="text"
+                id="lname" name="lname"></div>
         <div class="mb-3"><label class="form-label" for="email">Email</label><input class="form-control" type="email"
                 id="email" name="email"></div>
         <div class="mb-3"><button class="btn btn-primary" type="submit">Generate</button></div>

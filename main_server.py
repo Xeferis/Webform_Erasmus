@@ -8,6 +8,8 @@ server = Flask(__name__, template_folder="templates")
 udb = hf.Generate_db_user("Data/test.db")
 adb = hf.Generate_db_admin("Data/test_ad.db")
 
+udb.close_connection()
+adb.close_connection()
 
 @server.route('/')
 def start():
@@ -34,20 +36,24 @@ def admin_start():
     return render_template('admin.html')
 
 
-@server.route('/admin_generate_new_User', methods=['GET', 'POST'])
+@server.route('/admin_generate_new_user', methods=['GET', 'POST'])
 def admin_new_user():
     if request.method == 'GET':
         return render_template('admin_newuser.html')
     else:
+        udb = hf.Generate_db_user("Data/test.db")
         token = udb.add_user(dict(request.form))
+        udb.close_connection()
         return render_template('user_generated.html',
                                uuid=token,
                                user=dict(request.form))
 
 @server.route('/admin_userdatabase')
 def admin_allusers():
-    users = udb.content
+    udb = hf.Generate_db_user("Data/test.db")
+    users = udb.get_all_users()
     print(users)
+    udb.close_connection()
     return render_template('table.html', data=users)
 
 

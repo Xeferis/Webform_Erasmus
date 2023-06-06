@@ -127,9 +127,10 @@ class Generate_db_user():
                     FOREIGN KEY(UID) REFERENCES USER(UID)
                     );""")
             print("Table ADDRESS Created!")
-
-        self.content = self.get_all_users()
         self.__db.commit()
+
+    def close_connection(self) -> None:
+        self.__db.close()
 
     def add_user(self, data: dict, max_trys=10) -> None:
         """
@@ -602,6 +603,9 @@ class Generate_db_admin():
                     PASSWORD CHAR(16) NOT NULL
                     );""")
             print("Table ADMIN Created!")
+
+    def close_connection(self) -> None:
+        self.__db.close()
 
     def add_admin(self, data: list) -> None:
         """
