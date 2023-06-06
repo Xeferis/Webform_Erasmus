@@ -9,8 +9,6 @@
     <link rel="stylesheet" href="static/admin_assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="static/admin_assets/css/Nunito.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-</head>
-
 <body id="page-top">
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
@@ -26,10 +24,10 @@
                     <li class="nav-item"><a class="nav-link" href="{{url_for('admin_allusers')}}"><i
                                 class="fas fa-table"></i><span>Table</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{url_for('admin_new_user')}}"><i
-                                class="fas fa-table"></i><span>Generate User</span></a></li>
+                                class="fas fa-user"></i><span>Generate User</span></a></li>
                 </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
-                        id="sidebarToggle" type="button"></button></div>
+                <div class="text-center d-none d-md-inline"><a class="btn rounded-circle border-0"
+                        id="sidebarToggle" type="button" href="{{url_for('start')}}"></a></div>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
