@@ -128,6 +128,7 @@ class Generate_db_user():
                     );""")
             print("Table ADDRESS Created!")
 
+        self.content = self.get_all_users()
         self.__db.commit()
 
     def add_user(self, data: list, max_trys=10) -> None:
@@ -397,7 +398,7 @@ class Generate_db_user():
         data_B = self.__curs.fetchall()
 
         if len(data_B) == 1:
-            bic, name = data_BD[0]
+            bic, name = data_B[0]
             print(f"The Bank with the BIC {new_data['bic']}, already exists.")
         elif len(data_B) > 1:
             print("Es wurden mehrer Banken mit der gleichen BIC gefunden. \
@@ -461,6 +462,44 @@ class Generate_db_user():
                             LEFT JOIN BANK
                             ON BANKDATA.BIC = BANK.BIC
                             WHERE USER.EMAIL='{mail}'
+                            """)
+        extracted_data = self.__curs.fetchall()
+        self.__db.commit()
+        return extracted_data
+
+    def get_all_users(self) -> list:
+        """
+        Returns all Userdata
+
+        Returns:
+            list: returns a List of all Informations
+        """
+        self.__curs.execute("""
+                            select
+                            USER.UID,
+                            USER.NAME,
+                            USER.FIRSTNAME,
+                            USER.USERTOKEN,
+                            USER.EMAIL,
+                            PRIVATE_DATA.BIRTHDAY,
+                            PRIVATE_DATA.PHONE,
+                            ADDRESS.STREET,
+                            ADDRESS.NUMBER,
+                            ADDRESS.POSTALCODE,
+                            ADDRESS.CITY,
+                            BANKDATA.IBAN,
+                            BANKDATA.BIC,
+                            BANK.NAME
+
+                            from USER
+                            LEFT JOIN PRIVATE_DATA
+                            ON USER.UID = PRIVATE_DATA.UID
+                            LEFT JOIN ADDRESS
+                            ON USER.UID = ADDRESS.UID
+                            LEFT JOIN BANKDATA
+                            ON USER.UID = BANKDATA.UID
+                            LEFT JOIN BANK
+                            ON BANKDATA.BIC = BANK.BIC
                             """)
         extracted_data = self.__curs.fetchall()
         self.__db.commit()
@@ -700,22 +739,22 @@ class Generate_db_admin():
 
 def test_user_db():
     db_test = Generate_db_user('Data/test.db')
-    inp = ['test', 'Test12', 'h@b.de']
+    inp = ['test', 'Test12', 'h@c.de']
     new_data = {
         "birthday": "20.08.2003",
         "phone": "0125468423543",
-        "street": "TestStreet",
+        "street": "stesrss",
         "number": 18,
         "postal": 45438,
-        "city": "testhausen",
-        "iban": "DE45 2341 1233 1673 0000 44",
+        "city": "testerus",
+        "iban": "DE45 2543 1234 1673 0000 44",
         "bic": "GENODIX23",
         "bankbez": "Deutsche Test Bank eV"
         }
     # db_test.add_user(inp)
-    # print(db_test.complete_user(new_data,
-    #       "ca883e0a-192a-467e-a61e-128a57c0806a"))
-    print(db_test.get_user('h@b.de'))
+    print(db_test.complete_user(new_data,
+          "44a23588-13ac-44ce-9205-da53a58256e4"))
+    # print(db_test.get_user('h@b.de'))
     # db_test.del_user("ca883e0a-192a-467e-a61e-128a57c0806a")
     # print(db_test.get_user('h@b.de'))
 

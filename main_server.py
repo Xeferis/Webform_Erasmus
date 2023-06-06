@@ -5,7 +5,9 @@ from flask import Flask, render_template, redirect, url_for
 # Init
 server = Flask(__name__, template_folder="templates")
 
-# db = hf.Generate_db_user("Data/sqlite3_database.db")
+udb = hf.Generate_db_user("Data/test.db")
+adb = hf.Generate_db_admin("Data/test_ad.db")
+
 
 @server.route('/')
 def start():
@@ -34,7 +36,9 @@ def admin_start():
 
 @server.route('/admin_userdatabase')
 def admin_allusers():
-    return render_template('table.html')
+    users = udb.content
+    print(users)
+    return render_template('table.html', data=users)
 
 
 @server.route('/register', methods=['GET', 'POST'])
