@@ -14,20 +14,20 @@ Userdata - Erasmus
                 <p>Token: {{uuid}}</p>
             </div>
             <form method="post">
-                <div class="mb-3"><label class="form-label" for="fname">Vorname</label><input class="form-control" type="text" id="fname" name="fname"></div>
-                <div class="mb-3"><label class="form-label" for="lname">Nachname</label><input class="form-control" type="text" id="lname" name="lname"></div>
-                <div class="mb-3"><label class="form-label" for="email">Email</label><input class="form-control" type="email" id="email" name="email"></div>
-                <div class="mb-3"><label class="form-label" for="birthday">Geburtstag</label><input class="form-control" id="birthday" type="date" name="birthday"></div>
-                <div class="mb-3"><label class="form-label" for="phone">Telefon</label><input class="form-control" type="tel" id="phone" name="phone"></div>
+                <div class="mb-3"><label class="form-label" for="fname">Vorname</label><input class="form-control" type="text" id="fname" name="fname" value="{{data[0]}}" {{disopt[0]}}></div>
+                <div class="mb-3"><label class="form-label" for="lname">Nachname</label><input class="form-control" type="text" id="lname" name="lname" value="{{data[1]}}" {{disopt[1]}}></div>
+                <div class="mb-3"><label class="form-label" for="email">Email</label><input class="form-control" type="email" id="email" name="email" value="{{data[2]}}" {{disopt[2]}}></div>
+                <div class="mb-3"><label class="form-label" for="birthday">Geburtstag</label><input class="form-control" id="birthday" type="date" name="birthday" value="{{data[3]}}" {{disopt[3]}}></div>
+                <div class="mb-3"><label class="form-label" for="phone">Telefon</label><input class="form-control" type="tel" id="phone" name="phone" value="{{data[4]}}" {{disopt[4]}}></div>
                 <h2 class="pt-4">Addresse</h2>
-                <div class="mb-3"><label class="form-label" for="street">Straße</label><input class="form-control" type="text" id="street" name="street"></div>
-                <div class="mb-3"><label class="form-label" for="number">Hausnummer</label><input class="form-control" type="number" id="number" name="number"></div>
-                <div class="mb-3"><label class="form-label" for="postal">Postleitzahl</label><input class="form-control" type="number" id="postal" name="postal"></div>
-                <div class="mb-3"><label class="form-label" for="city">Wohnort</label><input class="form-control" type="text" id="city" name="city"></div>
+                <div class="mb-3"><label class="form-label" for="street">Straße</label><input class="form-control" type="text" id="street" name="street" value="{{data[5]}}" {{disopt[5]}}></div>
+                <div class="mb-3"><label class="form-label" for="number">Hausnummer</label><input class="form-control" type="number" id="number" name="number" value="{{data[6]}}" {{disopt[6]}}></div>
+                <div class="mb-3"><label class="form-label" for="postal">Postleitzahl</label><input class="form-control" type="number" id="postal" name="postal" value="{{data[7]}}" {{disopt[7]}}></div>
+                <div class="mb-3"><label class="form-label" for="city">Wohnort</label><input class="form-control" type="text" id="city" name="city" value="{{data[8]}}" {{disopt[8]}}></div>
                 <h2 class="pt-4">Bankdaten</h2>
-                <div class="mb-3"><label class="form-label" for="iban">IBan</label><input class="form-control" type="text" id="iban" name="iban"></div>
-                <div class="mb-3"><label class="form-label" for="bic">BIC</label><input class="form-control" type="text" id="bic" name="bic"></div>
-                <div class="mb-3"><label class="form-label" for="bankbez">Bankinstitut</label><input class="form-control" type="text" id="bankbez" name="bankbez"></div>
+                <div class="mb-3"><label class="form-label" for="iban">IBan</label><input class="form-control" type="text" id="iban" name="iban" value="{{data[9]}}" {{disopt[9]}}></div>
+                <div class="mb-3"><label class="form-label" for="bic">BIC</label><input class="form-control" type="text" id="bic" name="bic" value="{{data[10]}}" {{disopt[10]}}></div>
+                <div class="mb-3"><label class="form-label" for="bankbez">Bankinstitut</label><input class="form-control" type="text" id="bankbez" name="bankbez" value="{{data[11]}}" {{disopt[11]}}></div>
                 <div class="mb-3"><button class="btn btn-primary" type="submit">Send</button></div>
             </form>
         </div>

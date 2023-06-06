@@ -208,7 +208,7 @@ class Generate_db_user():
 
         Returns:
             bool: true or false based on the outcome
-        """        
+        """
         # Get UserID based on Token
         self.__curs.execute(f"""
                             SELECT *
@@ -231,7 +231,6 @@ class Generate_db_user():
             NO User with the token {utoken},
             has been found""")
             return (False, "error")
-        
 
     def complete_user(self, new_data: dict, utoken: str) -> str:
         """
@@ -447,7 +446,7 @@ class Generate_db_user():
         self.__db.commit()
         return uid
 
-    def get_user(self, mail: str) -> list:
+    def get_user(self, token: str) -> list:
         """
         Returns all Userdate by inputing the Mail
 
@@ -461,9 +460,9 @@ class Generate_db_user():
         self.__curs.execute(f"""
                             select
                             USER.UID,
+                            USER.USERTOKEN,
                             USER.NAME,
                             USER.FIRSTNAME,
-                            USER.USERTOKEN,
                             USER.EMAIL,
                             PRIVATE_DATA.BIRTHDAY,
                             PRIVATE_DATA.PHONE,
@@ -484,7 +483,7 @@ class Generate_db_user():
                             ON USER.UID = BANKDATA.UID
                             LEFT JOIN BANK
                             ON BANKDATA.BIC = BANK.BIC
-                            WHERE USER.EMAIL='{mail}'
+                            WHERE USER.USERTOKEN='{token}'
                             """)
         extracted_data = self.__curs.fetchall()
         self.__db.commit()
@@ -500,8 +499,8 @@ class Generate_db_user():
         self.__curs.execute("""
                             select
                             USER.UID,
-                            USER.NAME,
                             USER.FIRSTNAME,
+                            USER.NAME,
                             USER.USERTOKEN,
                             USER.EMAIL,
                             PRIVATE_DATA.BIRTHDAY,

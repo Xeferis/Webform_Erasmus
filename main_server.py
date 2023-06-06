@@ -79,8 +79,24 @@ def register_user():
 def adding_user():
     if request.method == 'GET':
         global usertoken
+        udb = hf.Generate_db_user("Data/test.db")
+        data = udb.get_user(usertoken)
+        data = data[0][2:]
+        print(data)
+        datalist = []
+        disabledlist = []
+        for specific in data:
+            if specific is None:
+                disabledlist.append('')
+            else:
+                datalist.append(specific)
+                disabledlist.append('disabled')
+
+        print(disabledlist)
+        print(datalist)
+        udb.close_connection()
         try:
-            return render_template('user_data.html', uuid=usertoken)
+            return render_template('user_data.html', uuid=usertoken, data=datalist, disopt=disabledlist)
         except:
             abort(404)
     else:
@@ -88,6 +104,7 @@ def adding_user():
         print(data)
         udb = hf.Generate_db_user("Data/test.db")
         udb.complete_user(data, usertoken)
+        udb.close_connection()
         return render_template('success.html')
 
 
