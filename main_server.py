@@ -12,9 +12,29 @@ def start():
     return render_template('index.html')
 
 
-@server.route('/admin')
+@server.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
-    return render_template('index.html')
+    return render_template('login.html')
+
+
+@server.route('/admin_register', methods=['GET', 'POST'])
+def admin_register():
+    return render_template('register.html')
+
+
+@server.route('/admin_newpassword', methods=['GET', 'POST'])
+def admin_newpassword():
+    return render_template('forgot-password.html')
+
+
+@server.route('/admin_dashboard')
+def admin_start():
+    return render_template('admin.html')
+
+
+@server.route('/admin_userdatabase')
+def admin_allusers():
+    return render_template('table.html')
 
 
 @server.route('/register', methods=['GET', 'POST'])

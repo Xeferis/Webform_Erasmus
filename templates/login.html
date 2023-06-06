@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Login - Erasmus Admin</title>
     <meta name="description" content="Admin Page for Admins of the Webpage">
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/Nunito.css">
+    <link rel="stylesheet" href="static/admin_assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/admin_assets/css/Nunito.css">
 </head>
 
 <body class="bg-gradient-primary">
@@ -32,10 +32,12 @@
                                             <div class="custom-control custom-checkbox small">
                                                 <div class="form-check"><input class="form-check-input custom-control-input" type="checkbox" id="formCheck-1"><label class="form-check-label custom-control-label" for="formCheck-1">Remember Me</label></div>
                                             </div>
-                                        </div><button class="btn btn-primary d-block btn-user w-100" type="submit">Login</button>
+                                        </div>
+                                        <!-- For testing its just a link, later make it submit button!-->
+                                        <a class="btn btn-primary d-block btn-user w-100" type="button" href="{{url_for('admin_start')}}">Login</a>
                                     </form>
-                                    <div class="text-center"><a class="small" href="forgot-password.html">Forgot Password?</a></div>
-                                    <div class="text-center"><a class="small" href="register.html">Create an Account!</a></div>
+                                    <div class="text-center"><a class="small" href="{{url_for('admin_newpassword')}}">Forgot Password?</a></div>
+                                    <div class="text-center"><a class="small" href="{{url_for('admin_register')}}">Create an Account!</a></div>
                                 </div>
                             </div>
                         </div>
