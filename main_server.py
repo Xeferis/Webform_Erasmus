@@ -18,7 +18,12 @@ def start():
 
 @server.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
-    return render_template('login.html')
+    if request.method == 'GET':
+        return render_template('login.html')
+    elif request.method == 'POST':
+        return render_template('login.html')
+    else:
+        return render_template('404.html')
 
 
 @server.route('/admin_register', methods=['GET', 'POST'])
