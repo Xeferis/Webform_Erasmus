@@ -1,5 +1,5 @@
 import helper_functions as hf
-from flask import Flask, render_template, request, redirect, abort, session
+from flask import Flask, render_template, request, redirect, abort, session, url_for
 
 
 # Init
@@ -14,12 +14,24 @@ udb.close_connection()
 adb.close_connection()
 
 
+@server.route('/user_profile')
+def user_profile(token: str):
+    if session:
+        udb = hf.Generate_db_user("Data/test.db")
+        u_data = udb.get_user(token)
+        print(u_data)
+        return render_template('profile.html',
+                               username=session['username'],
+                               data=u_data[0])
+    return redirect('/')
+
+
 @server.route('/admin_profile')
 def admin_profile():
     if session:
         adb = hf.Generate_db_admin("Data/test_ad.db")
         a_data = adb.get_admin(session['mail'])
-        print(a_data)
+        # print(a_data)
         return render_template('profile_admin.html',
                                username=session['username'],
                                data=a_data[0])

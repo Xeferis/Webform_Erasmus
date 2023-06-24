@@ -34,19 +34,21 @@ Users - Erasmus
                             <th>e-Mail</th>
                             <th>Geburtstag</th>
                             <th>Telefon</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for user in data %}
-                        <tr>
-                            <td>{{user[0]}}</td>
-                            <td>{{user[1]}}</td>
-                            <td>{{user[2]}}</td>
-                            <td>{{user[3]}}</td>
-                            <td>{{user[4]}}</td>
-                            <td>{{user[5]}}</td>
-                            <td>{{user[6]}}</td>
-                        </tr>
+                            <tr>
+                                <td>{{user[0]}}</td>
+                                <td>{{user[1]}}</td>
+                                <td>{{user[2]}}</td>
+                                <td>{{user[3]}}</td>
+                                <td>{{user[4]}}</td>
+                                <td>{{user[5]}}</td>
+                                <td>{{user[6]}}</td>
+                                <td><a class="btn btn-primary btn-sm" type="button" href="{{ url_for('user_profile', token=user[3]) }}">Open</a></td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
