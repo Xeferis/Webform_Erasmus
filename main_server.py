@@ -11,6 +11,7 @@ adb = hf.Generate_db_admin("Data/test_ad.db")
 udb.close_connection()
 adb.close_connection()
 
+
 @server.route('/')
 def start():
     return render_template('index.html')
@@ -21,7 +22,15 @@ def admin_login():
     if request.method == 'GET':
         return render_template('login.html')
     elif request.method == 'POST':
-        return render_template('login.html')
+        adb = hf.Generate_db_admin("Data/test_ad.db")
+        in_data = dict(request.form)
+        a_data = adb.get_admin(in_data['email'])
+        print(in_data)
+        print(a_data)
+        if a_data[1] == in_data['password']:
+            return redirect('admin_dashboard')
+        else:
+            return render_template("failed_login.html")
     else:
         return render_template('404.html')
 

@@ -17,10 +17,7 @@
                 <div class="card shadow-lg o-hidden border-0 my-5">
                     <div class="card-body p-0">
                         <div class="row">
-                            <div class="col-lg-6 d-none d-lg-flex">
-                                <div class="flex-grow-1 bg-login-image" style="background-image: url(&quot;assets/img/dogs/image3.jpeg&quot;);"></div>
-                            </div>
-                            <div class="col-lg-6">
+                            <div class="col-lg-12">
                                 <div class="p-5">
                                     <div class="text-center">
                                         <h4 class="text-dark mb-4">Welcome Back!</h4>
@@ -34,7 +31,7 @@
                                             </div>
                                         </div>
                                         <!-- For testing its just a link, later make it submit button!-->
-                                        <a class="btn btn-primary d-block btn-user w-100" type="button" href="{{url_for('admin_start')}}">Login</a>
+                                        <button class="btn btn-primary d-block btn-user w-100" type="submit">Login</button>
                                     </form>
                                     <div class="text-center"><a class="small" href="{{url_for('admin_newpassword')}}">Forgot Password?</a></div>
                                     <div class="text-center"><a class="small" href="{{url_for('admin_register')}}">Create an Account!</a></div>
