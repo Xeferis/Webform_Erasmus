@@ -25,11 +25,15 @@ def admin_login():
         adb = hf.Generate_db_admin("Data/test_ad.db")
         in_data = dict(request.form)
         a_data = adb.get_admin(in_data['email'])
-        print(in_data)
+        adb.close_connection()
         print(a_data)
-        if a_data[1] == in_data['password']:
+        if a_data[0][-1] == in_data['password']:
+            in_data = None
+            a_data = None
             return redirect('admin_dashboard')
         else:
+            in_data = None
+            a_data = None
             return render_template("failed_login.html")
     else:
         return render_template('404.html')
@@ -37,7 +41,23 @@ def admin_login():
 
 @server.route('/admin_register', methods=['GET', 'POST'])
 def admin_register():
-    return render_template('register.html')
+    if request.method == 'GET':
+        return render_template('register.html')
+    elif request.method == 'POST':
+        in_data = dict(request.form)
+        adb = hf.Generate_db_admin("Data/test_ad.db")
+        adb.add_admin(in_data)
+        try:
+            a_data = adb.get_admin(in_data['email'])
+        except:
+            a_data = None
+            in_data = None
+            return render_template('failed_login.html')
+        a_data = None
+        in_data = None
+        return render_template('success.html')
+    else:
+        return render_template('404.html')
 
 
 @server.route('/admin_newpassword', methods=['GET', 'POST'])

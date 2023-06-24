@@ -621,17 +621,18 @@ class Generate_db_admin():
     def close_connection(self) -> None:
         self.__db.close()
 
-    def add_admin(self, data: list) -> None:
+    def add_admin(self, data: dict) -> None:
         """
         Add a User and generate a userspecific token
 
         Args:
-            data (list): specified data as List containing
+            data (dict): specified data as List containing
                             - Username
                             - Firstname
                             - Name
-                            - e-Mail
+                            - eMail
                             - Passwort
+                            - Password repeated
         """
         sql_statement = """
                         INSERT INTO ADMIN
@@ -644,23 +645,30 @@ class Generate_db_admin():
                         VALUES(?,?,?,?,?)
                         """
 
-        if len(data) > 5:
+        if len(data) > 6:
+            print(data)
             print("Too much data given!")
             return
 
         self.__curs.execute(f"""
                         SELECT count(EMAIL)
                         FROM ADMIN
-                        WHERE EMAIL='{data[3]}'
+                        WHERE EMAIL='{data['email']}'
                         """)
 
         if self.__curs.fetchone()[0] == 1:
-            print(f"Admin with the EMAIL: {data[3]} already exists")
+            print(f"Admin with the EMAIL: {data['email']} already exists")
             print("No Admin added")
             self.__db.commit()
         else:
-            print(f"Adding new Admin with Username {data[0]}")
-            self.__curs.execute(sql_statement, data)
+            print(f"Adding new Admin with Username {data['username']}")
+            self.__curs.execute(sql_statement, [
+                data['username'],
+                data['firstname'],
+                data['name'],
+                data['email'],
+                data['password']
+            ])
             self.__db.commit()
 
     def get_admin(self, mail: str) -> list:
