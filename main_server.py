@@ -14,6 +14,18 @@ udb.close_connection()
 adb.close_connection()
 
 
+@server.route('/admin_profile')
+def admin_profile():
+    if session:
+        adb = hf.Generate_db_admin("Data/test_ad.db")
+        a_data = adb.get_admin(session['mail'])
+        print(a_data)
+        return render_template('profile_admin.html',
+                               username=session['username'],
+                               data=a_data[0])
+    return redirect('/')
+
+
 @server.route('/')
 def start():
     return render_template('index.html')
@@ -32,6 +44,7 @@ def admin_login():
         adb.close_connection()
         if a_data[0][-1] == in_data['password']:
             session['username'] = a_data[0][1]
+            session['mail'] = a_data[0][4]
             in_data = None
             a_data = None
             return redirect('admin_dashboard')
@@ -46,6 +59,7 @@ def admin_login():
 @server.route('/admin_logout')
 def admin_logout():
     session.pop('username', None)
+    session.pop('mail', None)
     return redirect('/')
 
 
@@ -78,7 +92,8 @@ def admin_newpassword():
 @server.route('/admin_dashboard')
 def admin_start():
     if session:
-        return render_template('admin.html', username=session['username'])
+        return render_template('admin.html',
+                               username=session['username'])
     return redirect('admin_register')
 
 
@@ -86,7 +101,8 @@ def admin_start():
 def admin_new_user():
     if request.method == 'GET':
         if session:
-            return render_template('admin_newuser.html', username=session['username'])
+            return render_template('admin_newuser.html',
+                                   username=session['username'])
         return redirect('admin_register')
     else:
         udb = hf.Generate_db_user("Data/test.db")
@@ -94,16 +110,29 @@ def admin_new_user():
         udb.close_connection()
         return render_template('user_generated.html',
                                uuid=token,
-                               user=dict(request.form))
+                               user=dict(request.form),
+                               username=session['username'])
 
 
-@server.route('/admin_userdatabase')
+@server.route('/admin_userdatabase', methods=['GET', 'POST'])
 def admin_allusers():
     if session:
-        udb = hf.Generate_db_user("Data/test.db")
-        users = udb.get_all_users()
-        udb.close_connection()
-        return render_template('table.html', data=users, username=session['username'])
+        if request.method == 'GET':
+            udb = hf.Generate_db_user("Data/test.db")
+            users = udb.get_all_users()
+            udb.close_connection()
+            return render_template('table.html',
+                                data=users,
+                                username=session['username'])
+        elif request.method == 'POST':
+            udb = hf.Generate_db_user("Data/test.db")
+            del_token = dict(request.form)
+            udb.del_user(del_token['del_user'])
+            users = udb.get_all_users()
+            udb.close_connection()
+            return render_template('table.html',
+                                   data=users,
+                                   username=session['username'])
     return redirect('admin_register')
 
 
@@ -145,7 +174,10 @@ def adding_user():
         # print(datalist)
         udb.close_connection()
         try:
-            return render_template('user_data.html', uuid=usertoken, data=datalist, disopt=disabledlist)
+            return render_template('user_data.html',
+                                   uuid=usertoken,
+                                   data=datalist,
+                                   disopt=disabledlist)
         except:
             abort(404)
     else:
