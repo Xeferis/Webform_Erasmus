@@ -85,7 +85,9 @@ def admin_start():
 @server.route('/admin_generate_new_user', methods=['GET', 'POST'])
 def admin_new_user():
     if request.method == 'GET':
-        return render_template('admin_newuser.html')
+        if session:
+            return render_template('admin_newuser.html', username=session['username'])
+        return redirect('admin_register')
     else:
         udb = hf.Generate_db_user("Data/test.db")
         token = udb.add_user(dict(request.form))
@@ -97,11 +99,13 @@ def admin_new_user():
 
 @server.route('/admin_userdatabase')
 def admin_allusers():
-    udb = hf.Generate_db_user("Data/test.db")
-    users = udb.get_all_users()
-    print(users)
-    udb.close_connection()
-    return render_template('table.html', data=users)
+    if session:
+        udb = hf.Generate_db_user("Data/test.db")
+        users = udb.get_all_users()
+        print(users)
+        udb.close_connection()
+        return render_template('table.html', data=users)
+    return redirect('admin_register')
 
 
 @server.route('/register', methods=['GET', 'POST'])
