@@ -134,8 +134,8 @@ def admin_allusers():
             users = udb.get_all_users()
             udb.close_connection()
             return render_template('table.html',
-                                data=users,
-                                username=session['username'])
+                                   data=users,
+                                   username=session['username'])
         elif request.method == 'POST':
             udb = hf.Generate_db_user("Data/test.db")
             del_token = dict(request.form)
