@@ -102,9 +102,8 @@ def admin_allusers():
     if session:
         udb = hf.Generate_db_user("Data/test.db")
         users = udb.get_all_users()
-        print(users)
         udb.close_connection()
-        return render_template('table.html', data=users)
+        return render_template('table.html', data=users, username=session['username'])
     return redirect('admin_register')
 
 
@@ -132,7 +131,7 @@ def adding_user():
         udb = hf.Generate_db_user("Data/test.db")
         data = udb.get_user(usertoken)
         data = data[0][2:]
-        print(data)
+        # print(data)
         datalist = []
         disabledlist = []
         for specific in data:
@@ -142,8 +141,8 @@ def adding_user():
                 datalist.append(specific)
                 disabledlist.append('disabled')
 
-        print(disabledlist)
-        print(datalist)
+        # print(disabledlist)
+        # print(datalist)
         udb.close_connection()
         try:
             return render_template('user_data.html', uuid=usertoken, data=datalist, disopt=disabledlist)
@@ -151,7 +150,7 @@ def adding_user():
             abort(404)
     else:
         data = dict(request.form)
-        print(data)
+        # print(data)
         udb = hf.Generate_db_user("Data/test.db")
         udb.complete_user(data, usertoken)
         udb.close_connection()
