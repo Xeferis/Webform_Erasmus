@@ -1,9 +1,11 @@
 import helper_functions as hf
-from flask import Flask, render_template, request, redirect, abort
+from flask import Flask, render_template, request, redirect, abort, session
 
 
 # Init
 server = Flask(__name__, template_folder="templates")
+
+server.secret_key = b'd1d1s#s<r7k3y'
 
 udb = hf.Generate_db_user("Data/test.db")
 adb = hf.Generate_db_admin("Data/test_ad.db")
@@ -20,14 +22,16 @@ def start():
 @server.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'GET':
+        if session:
+            return render_template('admin.html', username=session['username'])
         return render_template('login.html')
     elif request.method == 'POST':
         adb = hf.Generate_db_admin("Data/test_ad.db")
         in_data = dict(request.form)
         a_data = adb.get_admin(in_data['email'])
         adb.close_connection()
-        print(a_data)
         if a_data[0][-1] == in_data['password']:
+            session['username'] = a_data[0][1]
             in_data = None
             a_data = None
             return redirect('admin_dashboard')
@@ -37,6 +41,12 @@ def admin_login():
             return render_template("failed_login.html")
     else:
         return render_template('404.html')
+
+
+@server.route('/admin_logout')
+def admin_logout():
+    session.pop('username', None)
+    return redirect('/')
 
 
 @server.route('/admin_register', methods=['GET', 'POST'])
@@ -67,7 +77,9 @@ def admin_newpassword():
 
 @server.route('/admin_dashboard')
 def admin_start():
-    return render_template('admin.html')
+    if session:
+        return render_template('admin.html', username=session['username'])
+    return redirect('admin_register')
 
 
 @server.route('/admin_generate_new_user', methods=['GET', 'POST'])
