@@ -103,18 +103,22 @@ def admin_register():
     elif request.method == 'POST':
         in_data = dict(request.form)
         adb = hf.Generate_db_admin("Data/test_ad.db")
-        adb.add_admin(in_data)
-        try:
-            a_data = adb.get_admin(in_data['email'])
-        except:
+        if in_data['password'] == in_data['password_repeat']:
+            adb.add_admin(in_data)
+            try:
+                a_data = adb.get_admin(in_data['email'])
+            except:
+                a_data = None
+                in_data = None
+                flash("Your Account hasn't been added!", "danger")
+                return render_template('register.html')
             a_data = None
             in_data = None
-            flash("Your Account hasn't been added!", "danger")
+            flash("Your Account was successfully added!", "success")
             return render_template('register.html')
-        a_data = None
-        in_data = None
-        flash("Your Account was successfully added!", "success")
-        return render_template('register.html')
+        else:
+            flash("Your Account hasn't been added! Passwords don't match!", "danger")
+            return render_template('register.html')
     else:
         return render_template('404.html')
 

@@ -34,7 +34,7 @@
                             </form>
                             {% with messages = get_flashed_messages(with_categories=true) %}
                                 {% if messages %}
-                                <div class=flashes>
+                                <div class="flashes mt-3">
                                     {% for cat, message in messages %}
                                     <div class="alert alert-{{cat}}" role="alert">
                                         {{message}}
