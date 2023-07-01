@@ -1,11 +1,13 @@
 import helper_functions as hf
-from flask import Flask, render_template, request, redirect, abort, session, url_for
-
+from geopy.geocoders import Nominatim
+from flask import Flask, render_template, request, redirect, abort, session
 
 # Init
 server = Flask(__name__, template_folder="templates")
 
 server.secret_key = b'd1d1s#s<r7k3y'
+
+geolocator = Nominatim(user_agent="geoapiExercises")
 
 udb = hf.Generate_db_user("Data/test.db")
 adb = hf.Generate_db_admin("Data/test_ad.db")
@@ -19,7 +21,8 @@ def user_profile(token: str):
     if session:
         udb = hf.Generate_db_user("Data/test.db")
         u_data = udb.get_user(token)
-        print(u_data)
+        country = geolocator.geocode(u_data[0][9])
+        # print(u_data)
         return render_template('profile.html',
                                username=session['username'],
                                data=u_data[0])

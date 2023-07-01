@@ -18,40 +18,80 @@ User Profile - Erasmus
                                 <p class="text-primary m-0 fw-bold">User data</p>
                             </div>
                             <div class="card-body">
-                                <form>
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="mb-3"><label class="form-label" for="username"><strong>Username</strong></label><input class="form-control" type="text" id="username" placeholder="user.name" name="username"></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="mb-3"><label class="form-label" for="email"><strong>Email Address</strong></label><input class="form-control" type="email" id="email" placeholder="user@example.com" name="email"></div>
-                                        </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="first_name"><strong>First Name</strong></label><input
+                                                class="form-control" type="text" id="first_name" value="{{data[3]}}" name="first_name"></div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="mb-3"><label class="form-label" for="first_name"><strong>First Name</strong></label><input class="form-control" type="text" id="first_name" placeholder="John" name="first_name"></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="mb-3"><label class="form-label" for="last_name"><strong>Last Name</strong></label><input class="form-control" type="text" id="last_name" placeholder="Doe" name="last_name"></div>
-                                        </div>
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="last_name"><strong>Last Name</strong></label><input
+                                                class="form-control" type="text" id="last_name" value="{{data[2]}}" name="last_name"></div>
                                     </div>
-                                    <div class="mb-3"><button class="btn btn-primary btn-sm" type="submit">Save Settings</button></div>
-                                </form>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="email"><strong>e-mail</strong></label><input
+                                                class="form-control" type="email" id="email" value="{{data[4]}}" name="email"></div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="phon"><strong>Phone</strong></label><input class="form-control"
+                                                type="tel" id="phon" value="{{data[6]}}" name="phon"></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="Birthday"><strong>Birthday</strong></label><input
+                                                class="form-control" type="date" id="Birthday" value="{{data[5]}}" name="Birthday"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="card shadow">
+                        <div class="card shadow mb-3">
                             <div class="card-header py-3">
                                 <p class="text-primary m-0 fw-bold">Contact Settings</p>
                             </div>
                             <div class="card-body">
                                 <form>
-                                    <div class="mb-3"><label class="form-label" for="address"><strong>Address</strong></label><input class="form-control" type="text" id="address" placeholder="Sunset Blvd, 38" name="address"></div>
                                     <div class="row">
                                         <div class="col">
-                                            <div class="mb-3"><label class="form-label" for="city"><strong>City</strong></label><input class="form-control" type="text" id="city" placeholder="Los Angeles" name="city"></div>
+                                            <div class="mb-3"><label class="form-label" for="addstreet"><strong>Street</strong></label><input class="form-control"
+                                                type="text" id="addstreet" value="{{data[7]}}" name="addstreet"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="mb-3"><label class="form-label" for="country"><strong>Country</strong></label><input class="form-control" type="text" id="country" placeholder="USA" name="country"></div>
+                                            <div class="mb-3"><label class="form-label" for="addnum"><strong>Number</strong></label><input class="form-control"
+                                                    type="text" id="addnum" value="{{data[8]}}" name="addnum"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3"><label class="form-label" for="pcode"><strong>Postal Code</strong></label><input class="form-control"
+                                                    type="text" id="pcode" value="{{data[9]}}" name="pcode"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="mb-3"><label class="form-label" for="city"><strong>City</strong></label><input class="form-control"
+                                                type="text" id="city" value="{{data[10]}}" name="city"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3"><button class="btn btn-primary btn-sm" type="submit">Save&nbsp;Settings</button></div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <p class="text-primary m-0 fw-bold">Bank Settings</p>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="mb-3"><label class="form-label" for="iban"><strong>iBan</strong></label><input
+                                            class="form-control" type="text" id="iban" value="{{data[11]}}" name="iban"></div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3"><label class="form-label" for="BIC"><strong>BIC</strong></label><input
+                                                    class="form-control" type="text" id="BIC" value="{{data[12]}}" name="BIC"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="mb-3"><label class="form-label" for="inst"><strong>Institut</strong></label><input
+                                                    class="form-control" type="text" id="inst" value="{{data[13]}}" name="inst"></div>
                                         </div>
                                     </div>
                                     <div class="mb-3"><button class="btn btn-primary btn-sm" type="submit">Save&nbsp;Settings</button></div>
