@@ -109,10 +109,12 @@ def admin_register():
         except:
             a_data = None
             in_data = None
-            return render_template('failed_login.html')
+            flash("Your Account hasn't been added!", "danger")
+            return render_template('register.html')
         a_data = None
         in_data = None
-        return render_template('success.html')
+        flash("Your Account was successfully added!", "success")
+        return render_template('register.html')
     else:
         return render_template('404.html')
 

@@ -801,8 +801,7 @@ def test_admin_db():
            'sdfj1ud783']
 
     # Add Test
-    db_test.add_admin(inp)
-    print(db_test.get_admin('admn_h@b.de'))
+    db_test.del_admin("TestAD", "test@ad.de", "1234")
 
     # Del Test
     # db_test.del_admin('TestUsername',
@@ -819,4 +818,4 @@ def test_admin_db():
 
 
 if __name__ == "__main__":
-    test_user_db()
+    test_admin_db()
