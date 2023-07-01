@@ -104,14 +104,16 @@ def admin_register():
         in_data = dict(request.form)
         adb = hf.Generate_db_admin("Data/test_ad.db")
         if in_data['password'] == in_data['password_repeat']:
-            adb.add_admin(in_data)
+            adb.add_admin_waitlist(in_data)
             try:
-                a_data = adb.get_admin(in_data['email'])
+                a_data = adb.get_admin_waitlist(in_data['email'])
             except:
                 a_data = None
                 in_data = None
+                adb.close_connection()
                 flash("Your Account hasn't been added!", "danger")
                 return render_template('register.html')
+            adb.close_connection()
             a_data = None
             in_data = None
             flash("Your Account was successfully added!", "success")
@@ -128,11 +130,48 @@ def admin_newpassword():
     return render_template('forgot-password.html')
 
 
-@server.route('/admin_dashboard')
+@server.route('/admin_dashboard', methods=['GET', 'POST'])
 def admin_start():
     if session:
-        return render_template('admin.html',
-                               username=session['username'])
+        if request.method == 'GET':
+            adb = hf.Generate_db_admin("Data/test_ad.db")
+            admins_to_approve = adb.get_all_admins_waitlist()
+            adb.close_connection()
+            return render_template('admin.html',
+                                username=session['username'],
+                                data=admins_to_approve)
+        else:
+            adb = hf.Generate_db_admin("Data/test_ad.db")
+            in_data = dict(request.form)
+            print(in_data)
+            if in_data['btn_identifier'] == "approver":
+                print("Approve:", adb.get_admin_waitlist(in_data['mail']))
+                all_data = adb.get_admin_waitlist(in_data['mail'])
+                ad_dict = {
+                    'username': all_data[0][1],
+                    'firstname': all_data[0][2],
+                    'name': all_data[0][3],
+                    'email': all_data[0][4],
+                    'password': all_data[0][5]
+                }
+                adb.add_admin(ad_dict)
+                adb.del_admin_waitlist(all_data[0][1], all_data[0][4])
+                admins_to_approve = adb.get_all_admins_waitlist()
+                adb.close_connection()
+                all_data = None
+                return render_template('admin.html',
+                                       username=session['username'],
+                                       data=admins_to_approve)
+            elif in_data['btn_identifier'] == "deleter":
+                print("Delete:", adb.get_admin_waitlist(in_data['mail']))
+                all_data = adb.get_admin_waitlist(in_data['mail'])
+                adb.del_admin_waitlist(all_data[0][1], all_data[0][4])
+                admins_to_approve = adb.get_all_admins_waitlist()
+                adb.close_connection()
+                all_data = None
+                return render_template('admin.html',
+                                       username=session['username'],
+                                       data=admins_to_approve)
     return redirect('admin_register')
 
 

@@ -618,6 +618,28 @@ class Generate_db_admin():
                     );""")
             print("Table ADMIN Created!")
 
+        # Check and/or create ADMIN Table
+        self.__curs.execute("""
+                    SELECT count(name)
+                    FROM sqlite_master
+                    WHERE type='table'
+                    AND name='ADMIN_WAITLIST'
+                    """)
+
+        if self.__curs.fetchone()[0] == 1:
+            print("Table ADMIN_WAITLIST exists")
+        else:
+            self.__curs.execute("""
+                    CREATE TABLE ADMIN_WAITLIST
+                    (AUID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    USERNAME CHAR(32) NOT NULL,
+                    FIRSTNAME CHAR(20) NOT NULL,
+                    NAME CHAR(20) NOT NULL,
+                    EMAIL CHAR(25) NOT NULL,
+                    PASSWORD CHAR(16) NOT NULL
+                    );""")
+            print("Table ADMIN_WAITLIST Created!")
+
     def close_connection(self) -> None:
         self.__db.close()
 
@@ -670,6 +692,130 @@ class Generate_db_admin():
                 data['password']
             ])
             self.__db.commit()
+
+    def add_admin_waitlist(self, data: dict) -> None:
+        """
+        Add a User and generate a userspecific token
+
+        Args:
+            data (dict): specified data as List containing
+                            - Username
+                            - Firstname
+                            - Name
+                            - eMail
+                            - Passwort
+                            - Password repeated
+        """
+        sql_statement = """
+                        INSERT INTO ADMIN_WAITLIST
+                        (USERNAME,
+                        FIRSTNAME,
+                        NAME,
+                        EMAIL,
+                        PASSWORD
+                        )
+                        VALUES(?,?,?,?,?)
+                        """
+
+        if len(data) > 6:
+            print(data)
+            print("Too much data given!")
+            return
+
+        self.__curs.execute(f"""
+                        SELECT count(EMAIL)
+                        FROM ADMIN
+                        WHERE EMAIL='{data['email']}'
+                        """)
+
+        if self.__curs.fetchone()[0] == 1:
+            print(f"Admin with the EMAIL: {data['email']} already exists")
+            print("No Admin added")
+            self.__db.commit()
+        else:
+            print(f"Adding new Admin with Username {data['username']}")
+            self.__curs.execute(sql_statement, [
+                data['username'],
+                data['firstname'],
+                data['name'],
+                data['email'],
+                data['password']
+            ])
+            self.__db.commit()
+
+    def get_admin_waitlist(self, mail: str) -> list:
+        """
+        Returns all Admindata by inputing the Mail
+
+        Args:
+            mail (str): Adminusermailaddress
+
+        Returns:
+            list: returns a List of all Informations
+            for that specific Admin
+        """
+        self.__curs.execute(f"""
+                            SELECT *
+                            FROM ADMIN_WAITLIST
+                            WHERE EMAIL='{mail}'
+                            """)
+        extracted_data = self.__curs.fetchall()
+        self.__db.commit()
+        if len(extracted_data) > 0:
+            return extracted_data
+        else:
+            return "No Admin has been found"
+
+    def get_all_admins_waitlist(self) -> list:
+        """
+        Returns all Admins from the Waitlist
+
+        Returns:
+            list: returns a List of all Informations
+        """
+        self.__curs.execute(f"""
+                            SELECT *
+                            FROM ADMIN_WAITLIST
+                            """)
+        extracted_data = self.__curs.fetchall()
+        self.__db.commit()
+        return extracted_data
+    
+    def del_admin_waitlist(self, username: str, email: str) -> None:
+        """
+        Delets all Admin specific Data
+
+        Args:
+            pw (str): Password of the Admin that should be deleted!
+            username (str): Username of the Admin that should be deleted!
+        """
+        # Get UserID based on Token
+        self.__curs.execute(f"""
+                            SELECT *
+                            FROM ADMIN_WAITLIST
+                            WHERE USERNAME='{username}'
+                            AND EMAIL='{email}'
+                            """)
+        data = self.__curs.fetchall()
+        if len(data) == 1:
+            auid, username, name, fname, email, pw = data[0]
+            print(f"""
+            The Admin with the Username {username},
+            has been found and gets deleted""")
+
+            self.__curs.execute(f"""
+                            DELETE
+                            from ADMIN_WAITLIST
+                            WHERE ADMIN_WAITLIST.AUID='{auid}'
+                            """)
+
+        elif len(data) > 1:
+            print("Es wurden mehrer Nutzer mit dem gleichen Username gefunden. \
+                  Bitte wenden sie sich an ihren Keyuser!")
+        else:
+            print(f"No Admin with the Username: {username}, \
+            has been found. It might be deleted already")
+        self.__db.commit()
 
     def get_admin(self, mail: str) -> list:
         """
@@ -801,7 +947,7 @@ def test_admin_db():
            'sdfj1ud783']
 
     # Add Test
-    db_test.del_admin("ADTest", "ad@test.de", "1234")
+    db_test.del_admin("TestAD", "ad@test.de", "1234")
 
     # Del Test
     # db_test.del_admin('TestUsername',
