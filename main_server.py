@@ -1,13 +1,10 @@
 import helper_functions as hf
-from geopy.geocoders import Nominatim
 from flask import Flask, render_template, request, redirect, abort, session, flash
 
 # Init
 server = Flask(__name__, template_folder="templates")
 
 server.secret_key = b'd1d1s#s<r7k3y'
-
-geolocator = Nominatim(user_agent="geoapiExercises")
 
 udb = hf.Generate_db_user("Data/test.db")
 adb = hf.Generate_db_admin("Data/test_ad.db")
@@ -21,7 +18,6 @@ def user_profile(token: str):
     if session:
         udb = hf.Generate_db_user("Data/test.db")
         u_data = udb.get_user(token)
-        country = geolocator.geocode(u_data[0][9])
         # print(u_data)
         return render_template('profile.html',
                                username=session['username'],
@@ -37,15 +33,17 @@ def admin_profile():
             a_data = adb.get_admin(session['mail'])
             # print(a_data)
             return render_template('profile_admin.html',
-                                username=session['username'],
-                                data=a_data[0])
+                                   username=session['username'],
+                                   data=a_data[0])
         else:
             a_data = adb.get_admin(session['mail'])
             in_data = dict(request.form)
             if in_data['password'] == in_data['password_repeat']:
                 if a_data[0][-1] == in_data['o_password']:
-                    adb.change_pw(a_data[0][1], a_data[0][4],
-                                a_data[0][-1], in_data['password'])
+                    adb.change_pw(a_data[0][1],
+                                  a_data[0][4],
+                                  a_data[0][-1],
+                                  in_data['password'])
                     flash("Password change successful", "success")
                     in_data = None
                 else:
