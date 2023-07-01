@@ -801,7 +801,7 @@ def test_admin_db():
            'sdfj1ud783']
 
     # Add Test
-    db_test.del_admin("TestAD", "test@ad.de", "1234")
+    db_test.del_admin("ADTest", "ad@test.de", "1234")
 
     # Del Test
     # db_test.del_admin('TestUsername',
