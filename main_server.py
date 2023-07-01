@@ -14,7 +14,7 @@ udb.close_connection()
 adb.close_connection()
 
 
-@server.route('/user_profile/<token>')
+@server.route('/user_<token>')
 def user_profile(token: str):
     if session:
         udb = hf.Generate_db_user("Data/test.db")
