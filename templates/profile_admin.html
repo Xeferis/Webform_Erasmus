@@ -18,7 +18,7 @@ User Profile - Erasmus
                                 <p class="text-primary m-0 fw-bold">User Settings</p>
                             </div>
                             <div class="card-body">
-                                <form>
+                                <form method="post">
                                     <div class="row">
                                         <div class="col">
                                             <div class="mb-3"><label class="form-label" for="username"><strong>Username</strong></label><input class="form-control" type="text" id="username" value="{{data[1]}}" name="username"></div>
@@ -37,16 +37,33 @@ User Profile - Erasmus
                                     </div>
                                     <div class="row">
                                         <div class="col">
-                                            <div class="mb-3"><label class="form-label" for="password"><strong>password</strong></label><input
-                                                    class="form-control" type="text" id="password" name="password"></div>
+                                            <div class="mb-3"><label class="form-label" for="password"><strong>New password</strong></label><input
+                                                    class="form-control" type="password" id="password" name="password"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="mb-3"><label class="form-label" for="password_repeat"><strong>repeat password</strong></label><input
-                                                    class="form-control" type="text" id="password_repeat" name="password_repeat"></div>
+                                            <div class="mb-3"><label class="form-label" for="password_repeat"><strong>Repeat new password</strong></label><input
+                                                    class="form-control" type="password" id="password_repeat" name="password_repeat"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3"><label class="form-label" for="o_password"><strong>Old password</strong></label><input
+                                                    class="form-control" type="password" id="o_password" name="o_password"></div>
                                         </div>
                                     </div>
                                     <div class="mb-3"><button class="btn btn-primary btn-sm" type="submit">Change Password</button></div>
                                 </form>
+                                {% with messages = get_flashed_messages(with_categories=true) %}
+                                    {% if messages %}
+                                        <div class=flashes>
+                                            {% for cat, message in messages %}
+                                                <div class="alert alert-{{cat}}" role="alert">
+                                                    {{message}}
+                                                </div>
+                                            {% endfor %}
+                                            </div>
+                                    {% endif %}
+                                {% endwith %}
                             </div>
                         </div>
                     </div>

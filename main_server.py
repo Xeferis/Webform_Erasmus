@@ -1,6 +1,6 @@
 import helper_functions as hf
 from geopy.geocoders import Nominatim
-from flask import Flask, render_template, request, redirect, abort, session
+from flask import Flask, render_template, request, redirect, abort, session, flash
 
 # Init
 server = Flask(__name__, template_folder="templates")
@@ -29,15 +29,35 @@ def user_profile(token: str):
     return redirect('/')
 
 
-@server.route('/admin_profile')
+@server.route('/admin_profile', methods=['GET', 'POST'])
 def admin_profile():
     if session:
         adb = hf.Generate_db_admin("Data/test_ad.db")
-        a_data = adb.get_admin(session['mail'])
-        # print(a_data)
-        return render_template('profile_admin.html',
-                               username=session['username'],
-                               data=a_data[0])
+        if request.method == 'GET':
+            a_data = adb.get_admin(session['mail'])
+            # print(a_data)
+            return render_template('profile_admin.html',
+                                username=session['username'],
+                                data=a_data[0])
+        else:
+            a_data = adb.get_admin(session['mail'])
+            in_data = dict(request.form)
+            if in_data['password'] == in_data['password_repeat']:
+                if a_data[0][-1] == in_data['o_password']:
+                    adb.change_pw(a_data[0][1], a_data[0][4],
+                                a_data[0][-1], in_data['password'])
+                    flash("Password change successful", "success")
+                    in_data = None
+                else:
+                    flash("Wrong Password entered. Your password hasn't changed!", "danger")
+                    in_data = None
+            else:
+                flash("Your new password don't match the repetition", "danger")
+            # print(a_data)
+            return render_template('profile_admin.html',
+                                   username=session['username'],
+                                   data=a_data[0])
+
     return redirect('/')
 
 
