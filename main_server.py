@@ -27,6 +27,12 @@ udb.close_connection()
 adb.close_connection()
 
 
+# User Pages
+@server.route('/')
+def start():
+    return render_template('index.html')
+
+
 @server.route('/user_<token>')
 def user_profile(token: str):
     if session:
@@ -39,6 +45,60 @@ def user_profile(token: str):
     return redirect('/')
 
 
+@server.route('/register', methods=['GET', 'POST'])
+def register_user():
+    if request.method == 'GET':
+        return render_template('registration.html', recaptcha=recaptcha)
+    else:
+        udb = hf.Generate_db_user("Data/test.db")
+        global usertoken
+        usertoken = dict(request.form)['token']
+        check, uid = udb.check_user(usertoken)
+        if check and len(dict(request.form)['g-recaptcha-response']) > 0:
+            udb.close_connection()
+            return redirect('addinguser')
+        else:
+            udb.close_connection()
+            return render_template('usernotfound.html', uuid=usertoken)
+
+
+@server.route('/addinguser', methods=['GET', 'POST'])
+def adding_user():
+    if request.method == 'GET':
+        global usertoken
+        udb = hf.Generate_db_user("Data/test.db")
+        data = udb.get_user(usertoken)
+        data = data[0][2:]
+        # print(data)
+        datalist = []
+        disabledlist = []
+        for specific in data:
+            if specific is None:
+                disabledlist.append('')
+            else:
+                datalist.append(specific)
+                disabledlist.append('disabled')
+
+        # print(disabledlist)
+        # print(datalist)
+        udb.close_connection()
+        try:
+            return render_template('user_data.html',
+                                   uuid=usertoken,
+                                   data=datalist,
+                                   disopt=disabledlist)
+        except:
+            abort(404)
+    else:
+        data = dict(request.form)
+        # print(data)
+        udb = hf.Generate_db_user("Data/test.db")
+        udb.complete_user(data, usertoken)
+        udb.close_connection()
+        return render_template('success.html')
+
+
+# Admin Pages
 @server.route('/admin_profile', methods=['GET', 'POST'])
 def admin_profile():
     if session:
@@ -71,11 +131,6 @@ def admin_profile():
                                    data=a_data[0])
 
     return redirect('/')
-
-
-@server.route('/')
-def start():
-    return render_template('index.html')
 
 
 @server.route('/admin_login', methods=['GET', 'POST'])
@@ -269,59 +324,6 @@ def export_user_csv():
                     mimetype="text/csv",
                     headers={"Content-disposition":
                              f"attachment; filename=all_user_{current_datetime}.csv"})
-
-
-@server.route('/register', methods=['GET', 'POST'])
-def register_user():
-    if request.method == 'GET':
-        return render_template('registration.html', recaptcha=recaptcha)
-    else:
-        udb = hf.Generate_db_user("Data/test.db")
-        global usertoken
-        usertoken = dict(request.form)['token']
-        check, uid = udb.check_user(usertoken)
-        if check and len(dict(request.form)['g-recaptcha-response']) > 0:
-            udb.close_connection()
-            return redirect('addinguser')
-        else:
-            udb.close_connection()
-            return render_template('usernotfound.html', uuid=usertoken)
-
-
-@server.route('/addinguser', methods=['GET', 'POST'])
-def adding_user():
-    if request.method == 'GET':
-        global usertoken
-        udb = hf.Generate_db_user("Data/test.db")
-        data = udb.get_user(usertoken)
-        data = data[0][2:]
-        # print(data)
-        datalist = []
-        disabledlist = []
-        for specific in data:
-            if specific is None:
-                disabledlist.append('')
-            else:
-                datalist.append(specific)
-                disabledlist.append('disabled')
-
-        # print(disabledlist)
-        # print(datalist)
-        udb.close_connection()
-        try:
-            return render_template('user_data.html',
-                                   uuid=usertoken,
-                                   data=datalist,
-                                   disopt=disabledlist)
-        except:
-            abort(404)
-    else:
-        data = dict(request.form)
-        # print(data)
-        udb = hf.Generate_db_user("Data/test.db")
-        udb.complete_user(data, usertoken)
-        udb.close_connection()
-        return render_template('success.html')
 
 
 server.run("0.0.0.0", "5005")
