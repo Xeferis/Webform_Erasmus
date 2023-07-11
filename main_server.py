@@ -1,13 +1,17 @@
 import helper_functions as hf
+import json
 from flask_recaptcha import ReCaptcha
 from flask import Flask, render_template, request, redirect, abort, session, flash
 
 # Init
-server = Flask(__name__, template_folder="templates")
-server.secret_key = b'd1d1s#s<r7k3y'
 
-rc_webs_key = "6LdN8hUnAAAAAEasoEwuEbvqzujQ6lDaSfnCip_Y"
-rc_sec_key = "6LdN8hUnAAAAAKo4EzySbBUho6zUu9zREzO_v1yj"
+server = Flask(__name__, template_folder="templates")
+with open("config.json", "r") as f:
+    data = json.load(f)
+    server.secret_key = data['site_key'].encode('ascii')
+    rc_webs_key = data['rc_site_key']
+    rc_sec_key = data['rc_secret_key']
+
 recaptcha = ReCaptcha(app=server, site_key=rc_webs_key, secret_key=rc_sec_key)
 recaptcha.type
 
