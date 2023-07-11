@@ -1,10 +1,15 @@
 import helper_functions as hf
+from flask_recaptcha import ReCaptcha
 from flask import Flask, render_template, request, redirect, abort, session, flash
 
 # Init
 server = Flask(__name__, template_folder="templates")
-
 server.secret_key = b'd1d1s#s<r7k3y'
+
+rc_webs_key = "6LdN8hUnAAAAAEasoEwuEbvqzujQ6lDaSfnCip_Y"
+rc_sec_key = "6LdN8hUnAAAAAKo4EzySbBUho6zUu9zREzO_v1yj"
+recaptcha = ReCaptcha(app=server, site_key=rc_webs_key, secret_key=rc_sec_key)
+recaptcha.type
 
 udb = hf.Generate_db_user("Data/test.db")
 adb = hf.Generate_db_admin("Data/test_ad.db")
@@ -69,13 +74,13 @@ def admin_login():
     if request.method == 'GET':
         if session:
             return render_template('admin.html', username=session['username'])
-        return render_template('login.html')
+        return render_template('login.html', recaptcha=recaptcha)
     elif request.method == 'POST':
         adb = hf.Generate_db_admin("Data/test_ad.db")
         in_data = dict(request.form)
         a_data = adb.get_admin(in_data['email'])
         adb.close_connection()
-        if a_data[0][-1] == in_data['password']:
+        if a_data[0][-1] == in_data['password'] and len(in_data['g-recaptcha-response']) >0:
             session['username'] = a_data[0][1]
             session['mail'] = a_data[0][4]
             in_data = None
@@ -217,13 +222,13 @@ def admin_allusers():
 @server.route('/register', methods=['GET', 'POST'])
 def register_user():
     if request.method == 'GET':
-        return render_template('registration.html')
+        return render_template('registration.html', recaptcha=recaptcha)
     else:
         udb = hf.Generate_db_user("Data/test.db")
         global usertoken
         usertoken = dict(request.form)['token']
         check, uid = udb.check_user(usertoken)
-        if check:
+        if check and len(dict(request.form)['g-recaptcha-response']) > 0:
             udb.close_connection()
             return redirect('addinguser')
         else:

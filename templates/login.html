@@ -28,7 +28,7 @@
                                     <form class="user" method="post">
                                         <div class="mb-3"><input class="form-control form-control-user" type="email" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address..." name="email"></div>
                                         <div class="mb-3"><input class="form-control form-control-user" type="password" id="exampleInputPassword" placeholder="Password" name="password"></div>
-                                        <!-- For testing its just a link, later make it submit button!-->
+                                        <div class="mb-3">{{recaptcha.get_code()|safe}}</div>
                                         <button class="btn btn-primary d-block btn-user w-100" type="submit">Login</button>
                                     </form>
                                     <div class="text-center"><a class="small" href="{{url_for('admin_newpassword')}}">Forgot Password?</a></div>
