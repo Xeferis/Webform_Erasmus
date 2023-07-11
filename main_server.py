@@ -226,7 +226,7 @@ def admin_allusers():
 
 @server.route('/exporting_users')
 def export_user_csv():
-    current_datetime = datetime.strftime(datetime.now(), "%Y_%m_%d_%H_%M_%S")
+    current_datetime = datetime.strftime(datetime.now(), "%d_%m_%y")
     udb = hf.Generate_db_user("Data/test.db")
     all_data = udb.get_all_users()
     with open("outputs/output.csv", 'w+', newline='') as f:
@@ -253,7 +253,7 @@ def export_user_csv():
     return Response(csv_content,
                     mimetype="text/csv",
                     headers={"Content-disposition":
-                             "attachment; filename=all_user.csv"})
+                             f"attachment; filename=all_user_{current_datetime}.csv"})
 
 
 @server.route('/register', methods=['GET', 'POST'])
