@@ -1,10 +1,12 @@
 import helper_functions as hf
 import json
+import csv
+import os
+from datetime import datetime
 from flask_recaptcha import ReCaptcha
-from flask import Flask, render_template, request, redirect, abort, session, flash
+from flask import Flask, render_template, request, redirect, abort, session, flash, Response
 
 # Init
-
 server = Flask(__name__, template_folder="templates")
 with open("config.json", "r") as f:
     data = json.load(f)
@@ -221,6 +223,37 @@ def admin_allusers():
                                    data=users,
                                    username=session['username'])
     return redirect('admin_register')
+
+@server.route('/exporting_users')
+def export_user_csv():
+    current_datetime = datetime.strftime(datetime.now(), "%Y_%m_%d_%H_%M_%S")
+    udb = hf.Generate_db_user("Data/test.db")
+    all_data = udb.get_all_users()
+    with open("outputs/output.csv", 'w+', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["Index",
+                         "Vorname",
+                         "Nachname",
+                         "Usertoken",
+                         "e-Mail",
+                         "Geburtstag",
+                         "Telefon",
+                         "Straße",
+                         "Hausnummer",
+                         "Postleitzahl",
+                         "Stadt",
+                         "iBan",
+                         "BIC",
+                         "Bank"
+                         ])
+        writer.writerows(all_data)
+    with open("outputs/output.csv") as fp:
+        csv_content = fp.read()
+    os.remove("outputs/output.csv")
+    return Response(csv_content,
+                    mimetype="text/csv",
+                    headers={"Content-disposition":
+                             "attachment; filename=all_user.csv"})
 
 
 @server.route('/register', methods=['GET', 'POST'])
