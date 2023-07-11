@@ -8,11 +8,14 @@ from flask import Flask, render_template, request, redirect, abort, session, fla
 
 # Init
 server = Flask(__name__, template_folder="templates")
-with open("config.json", "r") as f:
-    data = json.load(f)
-    server.secret_key = data['site_key'].encode('ascii')
-    rc_webs_key = data['rc_site_key']
-    rc_sec_key = data['rc_secret_key']
+try:
+    with open("config.json", "r") as f:
+        data = json.load(f)
+        server.secret_key = data['site_key'].encode('ascii')
+        rc_webs_key = data['rc_site_key']
+        rc_sec_key = data['rc_secret_key']
+except:
+    raise Exception("Couldn't open config.json!")
 
 recaptcha = ReCaptcha(app=server, site_key=rc_webs_key, secret_key=rc_sec_key)
 recaptcha.type
@@ -86,7 +89,7 @@ def admin_login():
         in_data = dict(request.form)
         a_data = adb.get_admin(in_data['email'])
         adb.close_connection()
-        if a_data[0][-1] == in_data['password'] and len(in_data['g-recaptcha-response']) >0:
+        if a_data[0][-1] == in_data['password'] and len(in_data['g-recaptcha-response']) > 0:
             session['username'] = a_data[0][1]
             session['mail'] = a_data[0][4]
             in_data = None
@@ -110,11 +113,13 @@ def admin_logout():
 @server.route('/admin_register', methods=['GET', 'POST'])
 def admin_register():
     if request.method == 'GET':
-        return render_template('register.html')
+        return render_template('register.html', recaptcha=recaptcha)
     elif request.method == 'POST':
         in_data = dict(request.form)
         adb = hf.Generate_db_admin("Data/test_ad.db")
-        if in_data['password'] == in_data['password_repeat']:
+        print(in_data)
+        if in_data['password'] == in_data['password_repeat'] and len(in_data['g-recaptcha-response']) > 0:
+            in_data.popitem()
             adb.add_admin_waitlist(in_data)
             try:
                 a_data = adb.get_admin_waitlist(in_data['email'])
@@ -123,15 +128,18 @@ def admin_register():
                 in_data = None
                 adb.close_connection()
                 flash("Your Account hasn't been added!", "danger")
-                return render_template('register.html')
+                return render_template('register.html', recaptcha=recaptcha)
             adb.close_connection()
             a_data = None
             in_data = None
             flash("Your Account was successfully added!", "success")
-            return render_template('register.html')
+            return render_template('register.html', recaptcha=recaptcha)
+        elif len(in_data['g-recaptcha-response']) == 0:
+            flash("You failed your captcha!", "danger")
+            return render_template('register.html', recaptcha=recaptcha)
         else:
             flash("Your Account hasn't been added! Passwords don't match!", "danger")
-            return render_template('register.html')
+            return render_template('register.html', recaptcha=recaptcha)
     else:
         return render_template('404.html')
 
@@ -146,11 +154,17 @@ def admin_start():
     if session:
         if request.method == 'GET':
             adb = hf.Generate_db_admin("Data/test_ad.db")
+            udb = hf.Generate_db_user("Data/test.db")
+            number_of_users = len(udb.get_all_users())
+            not_completed_users = len([i for i in udb.get_all_users() if None in i])
             admins_to_approve = adb.get_all_admins_waitlist()
             adb.close_connection()
+            udb.close_connection()
             return render_template('admin.html',
-                                username=session['username'],
-                                data=admins_to_approve)
+                                   username=session['username'],
+                                   data=admins_to_approve,
+                                   user_count=number_of_users,
+                                   not_compl=not_completed_users)
         else:
             adb = hf.Generate_db_admin("Data/test_ad.db")
             in_data = dict(request.form)
@@ -223,6 +237,7 @@ def admin_allusers():
                                    data=users,
                                    username=session['username'])
     return redirect('admin_register')
+
 
 @server.route('/exporting_users')
 def export_user_csv():
