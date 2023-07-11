@@ -2,6 +2,7 @@
 .vscode
 test*
 config.json
+.VSCodeCounter/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
