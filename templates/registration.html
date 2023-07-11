@@ -14,7 +14,9 @@ Register - Erasmus
             </div>
             <form method="post">
                 <div class="mb-3"><label class="form-label" for="token">Usertoken</label><input class="form-control item" type="text" id="token" name="token"></div>
-                <div class="mb-3">{{recaptcha.get_code()|safe}}</div>
+                <div class="mb-3 text-center">
+                    <div style="display: inline-block;">{{recaptcha.get_code()|safe}}</div>
+                </div>
                 <button class="btn btn-primary" type="submit">Anmelden</button>
             </form>
         </div>
